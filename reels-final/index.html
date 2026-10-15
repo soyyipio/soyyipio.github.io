@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Yipio - Fechas (reel)</title>
+<!-- Placa 9:16 con las fechas de la gira, para el final de los reels. Las
+     fechas salen de data/fechas.json: las que ya pasaron salen tachadas y las
+     que tienen "ultimas": true llevan el cartel ÚLTIMAS ENTRADAS. Todo queda
+     dentro de la zona segura de Instagram. El botón descarga la placa como
+     PNG de 1080 × 1920. Logo: si existe reels-final/patotera.png se usa ese,
+     si no, el texto YIPIO. -->
+<style>
+  @font-face { font-family: 'Grind'; src: url('../fonts/GCGrind.woff2') format('woff2'); font-weight: 400 900; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Medium.woff2') format('woff2'); font-weight: 500; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Bold.woff2') format('woff2'); font-weight: 700; }
+
+  :root {
+    --fondo: #0c0614;
+    --purpura: #6a1fb5;
+    --purpura-vivo: #8f3fe0;
+    --oro: #e4c06a;
+    --oro-claro: #fff0bf;
+    --tinta: #1a0b05;
+    --texto: #f3edf9;
+    --texto-suave: #b9aad0;
+    --grad-oro: linear-gradient(100deg, #b8862b 0%, #f3d98f 18%, #fff5d6 28%, #d9ad4a 42%, #f6dc93 58%, #b8862b 76%, #f0cf7c 90%, #b8862b 100%);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    --alto-barra: 56px;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Grift', system-ui, 'Segoe UI', sans-serif;
+    color: var(--texto);
+  }
+
+  .barra {
+    align-self: stretch;
+    height: var(--alto-barra);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    background: var(--fondo);
+    border-bottom: 1px solid rgba(228, 192, 106, 0.26);
+    font-size: 14px;
+    color: var(--texto-suave);
+  }
+
+  .barra button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 999px;
+    background: var(--grad-oro);
+    color: var(--tinta);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .barra button:disabled { opacity: 0.6; cursor: wait; }
+
+  /* Lienzo 9:16 en cqw/cqh. Zona segura: arriba 12%, abajo 20%, costados 13% */
+  .placa {
+    position: relative;
+    flex: none;
+    margin: auto;
+    width: min(100vw, (100vh - var(--alto-barra)) * 9 / 16);
+    aspect-ratio: 9 / 16;
+    container-type: size;
+    text-transform: uppercase;
+    overflow: hidden;
+    /* bg.png oscurecido: velo general + más sombra arriba, al centro (detrás
+       de las fechas) y abajo */
+    background:
+      linear-gradient(180deg, rgba(7, 4, 12, 0.3) 0%, transparent 20%, transparent 80%, rgba(7, 4, 12, 0.35) 100%),
+      radial-gradient(ellipse 75% 45% at 50% 52%, rgba(7, 4, 12, 0.3), transparent 75%),
+      linear-gradient(rgba(7, 4, 12, 0.12), rgba(7, 4, 12, 0.12)),
+      url('bg.png') center / cover no-repeat,
+      var(--fondo);
+  }
+
+  .zona-segura {
+    position: absolute;
+    inset: 12cqh 13cqw 14cqh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .oro {
+    background: var(--grad-oro);
+    background-size: 100% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo { flex: none; }
+  .logo img { width: 52cqw; height: auto; display: block; }
+  .logo-texto {
+    font-family: 'Grind', Impact, sans-serif;
+    font-size: 17cqw;
+    line-height: 1;
+    letter-spacing: 0.5cqw;
+  }
+  .logo-texto .estrella { font-size: 0.45em; vertical-align: super; color: var(--oro); -webkit-text-fill-color: var(--oro); }
+
+  /* Fechas: se encogen solas (var --k) si no entran todas */
+  .fechas {
+    --k: 1;
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* Menos margen arriba: el logo y el título del mes ya traen aire propio,
+       así se ve a la misma distancia del logo que de "Entradas en" */
+    margin: 0 0 7cqh;
+    min-height: 0;
+  }
+  /* TEMPORAL (sin pie, todo en una columna): las fechas bajan hasta casi el
+     borde y las barras son más finas, para que entren al tamaño grande */
+  .zona-segura { bottom: 12cqh; }
+  .fechas { margin: 3cqh 0 0; justify-content: flex-start; }
+  .fecha { padding-top: calc(3.2cqw * var(--k)) !important; padding-bottom: calc(3.2cqw * var(--k)) !important; }
+  .mes-titulo { margin-bottom: calc(4cqw * var(--k)); }
+  .lista { gap: calc(4.5cqw * var(--k)) !important;
+    min-height: 0;
+  }
+
+  /* Las barras miden lo que necesita su contenido, más lugar a la derecha
+     para el sello de agotado */
+  .fechas-in { width: max-content; min-width: 50cqw; max-width: 100%; }
+  .fechas-in .fecha { padding-right: calc(17cqw * var(--k)); }
+  .mes + .mes { margin-top: calc(3.5cqw * var(--k)); }
+
+  /* Muchas fechas: dos columnas con los meses enteros. La columna más corta
+     queda centrada verticalmente respecto de la más alta. */
+  .fechas--dos .fechas-in {
+    display: flex;
+    align-items: center;
+    gap: 3cqw;
+    max-width: none;
+    min-width: 0;
+  }
+  .fechas--dos .fecha {
+    grid-template-columns: calc(14cqw * var(--k)) auto var(--ancho-info, auto);
+    gap: calc(2.2cqw * var(--k));
+    padding: calc(2.6cqw * var(--k)) calc(3cqw * var(--k)) calc(2.6cqw * var(--k)) calc(2.4cqw * var(--k));
+  }
+  .fechas--dos .fecha-dia { font-size: calc(5.4cqw * var(--k)); }
+  .fechas--dos .fecha-ciudad { font-size: calc(3.4cqw * var(--k)); }
+  .fechas--dos .fecha-lugar { font-size: calc(2.4cqw * var(--k)); }
+  .fechas--dos .bandera { width: calc(4.4cqw * var(--k)); }
+  .fechas--dos .sello { width: calc(14cqw * var(--k)); }
+
+  .mes-titulo {
+    font-family: 'Grind', Impact, sans-serif;
+    font-size: calc(7.5cqw * var(--k));
+    letter-spacing: 0.4cqw;
+    line-height: 1.1;
+    margin-bottom: calc(2.2cqw * var(--k));
+  }
+
+  .lista { display: flex; flex-direction: column; gap: calc(2cqw * var(--k)); }
+
+  .fecha {
+    position: relative;
+    display: grid;
+    /* Columna de la fecha con ancho fijo: todas alineadas y sin cortarse */
+    /* La columna de ciudad/teatro mide lo mismo en todas (--ancho-info, lo
+       calcula el JS) y todo arranca desde la izquierda, en el mismo punto */
+    grid-template-columns: calc(19cqw * var(--k)) auto var(--ancho-info, auto);
+    justify-content: start;
+    align-items: center;
+    gap: calc(3.4cqw * var(--k));
+    padding: calc(2.8cqw * var(--k)) calc(3.6cqw * var(--k));
+    border: 1px solid rgba(228, 192, 106, 0.3);
+    border-radius: 1.8cqw;
+    background: rgba(20, 10, 34, 0.75);
+  }
+
+  .fecha-dia {
+    font-family: 'Grind', Impact, sans-serif;
+    font-size: calc(7.6cqw * var(--k));
+    line-height: 1.1;
+    padding-top: 0.15em; /* Grind lleva las mayúsculas arriba del renglón */
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .divisor { width: 3px; align-self: stretch; background: var(--purpura-vivo); border-radius: 2px; }
+
+  /* Barras angostas: ciudad arriba y teatro abajo, cada uno en un renglón */
+  .fecha-info {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.6cqw * var(--k));
+    text-align: left;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .fecha-lugar { overflow: hidden; text-overflow: ellipsis; }
+
+  .fecha-ciudad {
+    display: flex;
+    align-items: center;
+    gap: calc(1.6cqw * var(--k));
+    font-size: calc(4.6cqw * var(--k));
+    font-weight: 700;
+    line-height: 1.05;
+  }
+
+  .bandera {
+    flex: none;
+    width: calc(6cqw * var(--k));
+    height: auto;
+    border-radius: 0.5cqw;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0.5cqw 2cqw rgba(0, 0, 0, 0.5);
+  }
+
+  .fecha-lugar {
+    font-size: calc(3.2cqw * var(--k));
+    line-height: 1.1;
+    font-weight: 500;
+    color: var(--texto-suave);
+  }
+
+  /* Cartel ÚLTIMAS ENTRADAS / AGOTADO: cuelga del borde de arriba a la derecha */
+  /* Cartel finito: no crece con las fechas (--kc tope 1) para no invadir
+     la barra de arriba */
+  .cartel {
+    --kc: min(var(--k), 1);
+    position: absolute;
+    top: 0;
+    right: calc(2.4cqw * var(--kc));
+    transform: translateY(-50%);
+    padding: calc(0.45cqw * var(--kc)) calc(1.6cqw * var(--kc)) calc(0.3cqw * var(--kc));
+    border-radius: 999px;
+    font-size: calc(1.9cqw * var(--kc));
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.25cqw;
+    white-space: nowrap;
+  }
+  .cartel--ultimas {
+    background: var(--grad-oro);
+    color: var(--tinta);
+    box-shadow: 0 0 0 0.6cqw rgba(228, 192, 106, 0.18), 0 0.5cqw 2cqw rgba(0, 0, 0, 0.5);
+  }
+  /* "agotado": true -> fila apagada y sello AGOTADO dorado encima */
+  .fecha--agotado > :not(.sello) { opacity: 0.4; }
+  .sello {
+    position: absolute;
+    right: calc(1cqw * var(--k));
+    top: 50%;
+    width: calc(21cqw * var(--k));
+    height: auto;
+    transform: translateY(-50%);
+    filter: drop-shadow(0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.7));
+    pointer-events: none;
+  }
+
+  .fecha--ultimas {
+    border-color: var(--oro);
+    box-shadow: 0 0 3cqw rgba(228, 192, 106, 0.22);
+  }
+
+  /* Fechas que ya pasaron: apagadas y tachadas con una raya blanca */
+  .fecha--pasada { border-color: rgba(255, 255, 255, 0.12); }
+  .fecha--pasada > :not(.cartel):not(.sello) { opacity: 0.45; }
+  .fecha--pasada .sello { z-index: 1; opacity: 0.6; } /* pasada y agotada: sello apagado sobre la raya */
+  .fecha--pasada::after {
+    content: '';
+    position: absolute;
+    left: calc(2cqw * var(--k));
+    right: calc(2cqw * var(--k));
+    top: 50%;
+    height: calc(0.7cqw * var(--k));
+    min-height: 2px;
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 0 1cqw rgba(0, 0, 0, 0.6);
+    transform: rotate(-2deg);
+  }
+
+  .sin-fechas { color: var(--texto-suave); font-size: 4cqw; }
+
+  .pie {
+    flex: none;
+    font-size: 3.6cqw;
+    font-weight: 700;
+    letter-spacing: 0.6cqw;
+    line-height: 1.2;
+  }
+  .pie-web {
+    display: block;
+    font-family: 'Grind', Impact, sans-serif;
+    font-size: 6.4cqw;
+    letter-spacing: 0.3cqw;
+  }
+</style>
+<script src="../js/comun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+</head>
+<body>
+
+<div class="barra">
+  <button type="button" id="descargar">Descargar PNG</button>
+  <span id="estado">PNG de 1080 × 1920 px</span>
+</div>
+
+<main class="placa" id="placa">
+  <div class="zona-segura">
+    <div class="logo" id="logo"><span class="logo-texto oro">YIPIO<span class="estrella">✦</span></span></div>
+
+    <section class="fechas" id="fechas"></section>
+
+    <!-- Oculto temporalmente: borrar style="display: none" para que vuelva -->
+    <footer class="pie" style="display: none">
+      Entradas en
+      <span class="pie-web oro">yipio.com.uy</span>
+    </footer>
+  </div>
+</main>
+
+<script>
+(function () {
+  const ANCHO_PNG = 1080;
+  const placa = document.getElementById('placa');
+  const wrap = document.getElementById('fechas');
+  const boton = document.getElementById('descargar');
+  const estado = document.getElementById('estado');
+  const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const MESES_LARGO = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+  ];
+
+  // Logo de PATOTERA si está en la carpeta; si no, queda el texto YIPIO
+  const logo = new Image();
+  logo.onload = () => {
+    document.getElementById('logo').innerHTML = '';
+    logo.alt = 'PATOTERA';
+    document.getElementById('logo').appendChild(logo);
+    ajustar();
+  };
+  logo.src = 'patotera.png';
+
+  // Fecha local (no UTC), así de noche no se tacha el show de hoy
+  function hoyISO() {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  // Achica de a poco (var --k) desde "maximo" hasta que entre o llegue al
+  // mínimo. Se mide el contenido y no el scrollHeight: al estar centrado,
+  // lo que sobresale por arriba no cuenta en el scroll.
+  function encoger(maximo, minimo) {
+    const contenido = wrap.querySelector('.fechas-in');
+    if (!contenido) return true;
+    // En dos columnas puede salirse un poco de los costados de la zona segura
+    const anchoMax = wrap.clientWidth + (wrap.classList.contains('fechas--dos') ? placa.clientWidth * 0.16 : 0);
+    const barras = Array.from(wrap.querySelectorAll('.fecha'));
+    const sobra = () => contenido.offsetHeight > wrap.clientHeight + 1 ||
+      contenido.offsetWidth > anchoMax + 1 ||
+      barras.some((b) => b.scrollWidth > b.clientWidth + 1);
+    let k = maximo;
+    wrap.style.setProperty('--k', k);
+    igualarAnchos();
+    while (sobra() && k > minimo) {
+      k -= 0.03;
+      wrap.style.setProperty('--k', k.toFixed(2));
+      igualarAnchos();
+    }
+    return !sobra();
+  }
+
+  // Todas las columnas de ciudad/teatro con el ancho de la más larga, así
+  // las barras quedan alineadas entre ellas
+  function igualarAnchos() {
+    wrap.style.removeProperty('--ancho-info');
+    const infos = Array.from(wrap.querySelectorAll('.fecha-info'));
+    const max = Math.max(0, ...infos.map((el) => el.scrollWidth));
+    wrap.style.setProperty('--ancho-info', `${max + 1}px`);
+  }
+
+  const MAX_UNA_COLUMNA = 99; // TEMPORAL: todo en una columna (antes 6)
+  // Arranca grande y achica hasta que entre (en dos columnas puede crecer más)
+  function ajustar() {
+    encoger(wrap.classList.contains('fechas--dos') ? 1.6 : 0.8, 0.4);
+  }
+
+  function descargar() {
+    if (!window.htmlToImage) {
+      estado.textContent = 'No se pudo cargar el generador de PNG (¿sin internet?).';
+      return;
+    }
+    boton.disabled = true;
+    estado.textContent = 'Generando PNG…';
+    htmlToImage.toPng(placa, {
+      pixelRatio: ANCHO_PNG / placa.getBoundingClientRect().width,
+      style: { margin: '0' },
+    })
+      .then((url) => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fechas-reel-${hoyISO()}.png`;
+        a.click();
+        estado.textContent = 'PNG de 1080 × 1920 px';
+      })
+      .catch(() => { estado.textContent = 'Error al generar el PNG.'; })
+      .finally(() => { boton.disabled = false; });
+  }
+
+  function cartel(f, pasada) {
+    if (f.agotado) return '<img class="sello" src="../img/agotado-inclinado.svg" alt="Agotado">';
+    if (pasada) return '';
+    if (f.ultimas) return '<span class="cartel cartel--ultimas">Últimas entradas</span>';
+    return '';
+  }
+
+  fetch('../data/fechas.json')
+    .then((r) => r.json())
+    .then((fechas) => {
+      const hoy = hoyISO();
+      const todas = fechas
+        .slice()
+        .sort((a, b) => (a.fecha + (a.hora || '')).localeCompare(b.fecha + (b.hora || '')))
+        // Dos funciones el mismo día se muestran como una sola fecha
+        .filter((f, i, arr) => i === 0 || f.fecha !== arr[i - 1].fecha);
+
+      if (!todas.length) {
+        wrap.innerHTML = '<p class="sin-fechas">Pronto nuevas fechas</p>';
+        return;
+      }
+
+      const grupos = [];
+      todas.forEach((f) => {
+        const clave = f.fecha.slice(0, 7);
+        let g = grupos[grupos.length - 1];
+        if (!g || g.clave !== clave) {
+          g = { clave, mes: Number(f.fecha.slice(5, 7)), items: [] };
+          grupos.push(g);
+        }
+        g.items.push(f);
+      });
+
+      // Hasta MAX_UNA_COLUMNA fechas va en una columna; con más, los meses se
+      // reparten en dos columnas lo más parejas posible (cada mes cuenta sus
+      // fechas más uno por el título)
+      const columnas = [grupos];
+      if (todas.length > MAX_UNA_COLUMNA && grupos.length > 1) {
+        const peso = (gs) => gs.reduce((s, g) => s + g.items.length + 1, 0);
+        let mejor = 1;
+        for (let i = 1; i < grupos.length; i++) {
+          const dif = Math.abs(peso(grupos.slice(0, i)) - peso(grupos.slice(i)));
+          if (dif < Math.abs(peso(grupos.slice(0, mejor)) - peso(grupos.slice(mejor)))) mejor = i;
+        }
+        columnas.splice(0, 1, grupos.slice(0, mejor), grupos.slice(mejor));
+      }
+      wrap.classList.toggle('fechas--dos', columnas.length > 1);
+
+      const htmlMes = (g) => `
+        <div class="mes">
+          <h2 class="mes-titulo oro">${MESES_LARGO[g.mes - 1]}</h2>
+          <div class="lista">
+            ${g.items.map((f) => {
+              const [, m, d] = f.fecha.split('-').map(Number);
+              const pasada = f.fecha < hoy;
+              const clases = ['fecha'];
+              if (pasada) clases.push('fecha--pasada');
+              else if (f.agotado) clases.push('fecha--agotado');
+              else if (f.ultimas && !f.agotado) clases.push('fecha--ultimas');
+              return `
+              <div class="${clases.join(' ')}">
+                <div class="fecha-dia oro">${d} ${MESES[m - 1]}</div>
+                <div class="divisor"></div>
+                <div class="fecha-info">
+                  <div class="fecha-ciudad">${window.YIPIO ? YIPIO.bandera(f.pais) : ''}<span>${f.ciudad}</span></div>
+                  ${f.lugar ? `<div class="fecha-lugar">${f.lugar}</div>` : ''}
+                </div>
+                ${cartel(f, pasada)}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+
+      wrap.innerHTML = '<div class="fechas-in">' +
+        columnas.map((gs) => `<div class="columna">${gs.map(htmlMes).join('')}</div>`).join('') +
+        '</div>';
+
+      ajustar();
+      document.fonts && document.fonts.ready.then(ajustar);
+    })
+    .catch(() => {
+      wrap.innerHTML = '<p class="sin-fechas">No se pudieron cargar las fechas.</p>';
+    });
+
+  boton.addEventListener('click', descargar);
+  window.addEventListener('resize', ajustar);
+  window.addEventListener('load', ajustar);
+})();
+</script>
+</body>
+</html>
