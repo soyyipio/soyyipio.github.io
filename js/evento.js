@@ -130,6 +130,7 @@
 
   Y.cargarJSON('data/fechas.json')
     .then(async (fechas) => {
+      fechas = fechas.filter((f) => f.visible !== false);
       const evento = fechas.find((f) => f.id === id);
       if (!evento) throw new Error('evento no encontrado');
 

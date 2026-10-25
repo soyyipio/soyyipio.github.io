@@ -5,6 +5,7 @@
 //   "agotado": true       -> sello AGOTADO y botón desactivado
 //   "ultimas": true       -> badge "Últimas entradas" que late
 //   "destacado": "Estreno" (o true) -> ticket dorado con brillo y badge
+//   "visible": false      -> no sale en la web (sí en flyer-maker)
 (function () {
   const Y = window.YIPIO;
   const wrap = document.getElementById('fechasList');
@@ -59,7 +60,7 @@
     .then(([fechas, config]) => {
       const hoy = Y.hoyISO();
       const proximas = fechas
-        .filter((f) => f.fecha >= hoy)
+        .filter((f) => f.visible !== false && f.fecha >= hoy)
         .sort((a, b) => `${a.fecha} ${a.hora || ''}`.localeCompare(`${b.fecha} ${b.hora || ''}`));
 
       if (!proximas.length) {

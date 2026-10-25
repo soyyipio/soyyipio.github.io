@@ -20,6 +20,7 @@ Para verlo local: `python -m http.server 4600` y abrir http://localhost:4600
 - `"agotado": true` → sello AGOTADO y botón desactivado.
 - `"ultimas": true` → badge "Últimas entradas" que late.
 - `"destacado": "Estreno"` (o `true` = "Función especial") → ticket dorado con brillo.
+- `"visible": false` → la fecha no sale en la web (ni en la landing ni en la placa de reels), pero sí en flyer-maker para armar los flyers antes de anunciarla.
 
 El cartel "Próxima función" toma solo la próxima fecha que no esté agotada.
 

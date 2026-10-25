@@ -437,7 +437,7 @@
     .then((fechas) => {
       const hoy = hoyISO();
       const todas = fechas
-        .slice()
+        .filter((f) => f.visible !== false)
         .sort((a, b) => (a.fecha + (a.hora || '')).localeCompare(b.fecha + (b.hora || '')))
         // Dos funciones el mismo día se muestran como una sola fecha
         .filter((f, i, arr) => i === 0 || f.fecha !== arr[i - 1].fecha);
