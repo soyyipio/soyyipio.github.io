@@ -1,13 +1,16 @@
 {
-  "_comentario": "Publicaciones destacadas de Instagram. Cada una: 'url' (link al post o reel), 'imagen' (captura guardada en img/instagram/), 'tipo' ('post' o 'reel') y 'texto' (opcional, aparece al pasar el mouse). Si una publicación no tiene 'imagen', se muestra el embed oficial de Instagram en su lugar.",
+  "_comentario": "Publicaciones destacadas de Instagram. Cada una: 'url' (link al post o reel), 'imagen' (captura guardada en img/instagram/), 'tipo' ('post' o 'reel') y 'texto' (opcional, aparece al pasar el mouse). Si una publicación no tiene 'imagen', se muestra el embed oficial de Instagram en su lugar. Últimos reels de @yipio al 26/10/2026.",
   "perfil": {
     "avatar": "img/instagram/perfil.jpg",
     "nombre": "Yisela Paola",
     "texto": "Comediante · Stand-up · PATOTERA gira 2026/2027"
   },
   "publicaciones": [
-    { "url": "https://www.instagram.com/yipio/", "imagen": "img/instagram/1.webp", "tipo": "reel", "texto": "Reel destacado" },
-    { "url": "https://www.instagram.com/yipio/", "imagen": "img/instagram/2.webp", "tipo": "post", "texto": "Publicación destacada" },
-    { "url": "https://www.instagram.com/yipio/", "imagen": "img/instagram/3.webp", "tipo": "reel", "texto": "Reel destacado" }
+    { "url": "https://www.instagram.com/reel/De7_aDFsdtw/", "imagen": "img/instagram/1.webp", "tipo": "reel", "texto": "Seguimos agotando: nuevas fechas" },
+    { "url": "https://www.instagram.com/reel/De0NteVRfuw/", "imagen": "img/instagram/2.webp", "tipo": "reel", "texto": "Te amamos Romi" },
+    { "url": "https://www.instagram.com/reel/Dez3bknFPlQ/", "imagen": "img/instagram/3.webp", "tipo": "reel", "texto": "De visita en DGO Stream" },
+    { "url": "https://www.instagram.com/reel/Dezwiqfkyw5/", "imagen": "img/instagram/4.webp", "tipo": "reel", "texto": "Respondiéndole a los haters" },
+    { "url": "https://www.instagram.com/reel/Den2kV1RYjf/", "imagen": "img/instagram/5.webp", "tipo": "reel", "texto": "No hay horario, no hay edición" },
+    { "url": "https://www.instagram.com/reel/DekxHPLxxWO/", "imagen": "img/instagram/6.webp", "tipo": "reel", "texto": "Sorteo de Juanes" }
   ]
 }

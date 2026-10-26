@@ -551,6 +551,16 @@ p { margin: 0 0 1em; }
   filter: drop-shadow(0 0 40px rgba(228, 192, 106, 0.3)) drop-shadow(0 12px 30px rgba(0, 0, 0, 0.6));
 }
 
+/* Logo en imagen (img/hero/logo.webp) en lugar del texto */
+.escenario-nombre--logo { margin: 0; padding: 0; line-height: 0; }
+.escenario-nombre--logo img {
+  width: auto;
+  height: clamp(5.5rem, min(30vw, 30vh), 17rem);
+  margin: 0 auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .escenario-fotos {
   position: absolute;
   left: 0;
@@ -562,9 +572,7 @@ p { margin: 0 0 1em; }
   justify-content: center;
   align-items: flex-end;
   pointer-events: none;
-  /* El brillo púrpura va acá y no en cada foto: drop-shadow + máscara en
-     el mismo elemento dibuja un rectángulo de luz en Chrome */
-  filter: drop-shadow(0 0 26px rgba(143, 63, 224, 0.5));
+  /* Sin brillo por CSS: las fotos de img/hero/ ya traen el suyo */
 }
 
 /* Luz cálida del seguidor sobre la foto del medio */
@@ -586,8 +594,8 @@ p { margin: 0 0 1em; }
   object-fit: contain;
   object-position: bottom;
   /* Las fotos están cortadas en la cintura: se funden con el piso */
-  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 97%);
-  mask-image: linear-gradient(to bottom, #000 70%, transparent 97%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
   opacity: 0;
 }
 /* js/escenario.js agrega .cargada cuando la foto ya bajó */
@@ -605,12 +613,13 @@ p { margin: 0 0 1em; }
 .escenario-foto--izq,
 .escenario-foto--der {
   z-index: 1;
-  height: 76%;
-  filter: brightness(0.8) saturate(0.95);
+  height: 80%;
+  filter: brightness(0.92);
 }
-.escenario-foto--izq { order: 1; margin-right: clamp(-120px, -6vw, -30px); }
-.escenario-foto--der { order: 3; margin-left: clamp(-120px, -6vw, -30px); }
-.escenario-foto--cabeza { display: none; }
+/* Las de los costados quedan pegadas atrás de la del centro (las fotos se
+   achican con el alto de la pantalla, por eso el solape va en vh) */
+.escenario-foto--izq { order: 1; margin-right: calc(-31vh + 20px); }
+.escenario-foto--der { order: 3; margin-left: calc(-31vh + 20px); }
 
 @keyframes foto-sube {
   from { opacity: 0; transform: translateY(50px); }
@@ -686,25 +695,13 @@ p { margin: 0 0 1em; }
     padding-top: calc(var(--nav-h) + 48px);
   }
   .escenario-titulo { position: relative; top: auto; }
-  /* Todas en posición absoluta y en % del mismo contenedor: así las copias
-     de las cabezas coinciden siempre con sus fotos (con vw se desfasaban
-     por el ancho de la barra de scroll). 68% + 2x42% - 2x26% = 100%. */
-  .escenario-fotos { position: relative; height: auto; margin-top: 2vw; aspect-ratio: 100 / 68; }
-  .escenario-foto { position: absolute; bottom: 0; margin: 0 !important; height: auto; }
-  .escenario-foto--centro { width: 68%; left: 16%; }
-  .escenario-foto--izq,
-  .escenario-foto--der { width: 42%; }
-  .escenario-foto--izq { left: 0; }
-  .escenario-foto--der { right: 0; }
-  .escenario-foto--cabeza { display: block; z-index: 3; }
-  .escenario-foto--izq.escenario-foto--cabeza {
-    -webkit-mask-image: radial-gradient(ellipse 27% 23% at 53% 18%, #000 75%, transparent 100%);
-    mask-image: radial-gradient(ellipse 27% 23% at 53% 18%, #000 75%, transparent 100%);
-  }
-  .escenario-foto--der.escenario-foto--cabeza {
-    -webkit-mask-image: radial-gradient(ellipse 24% 19% at 51% 16%, #000 72%, transparent 100%);
-    mask-image: radial-gradient(ellipse 24% 19% at 51% 16%, #000 72%, transparent 100%);
-  }
+  /* Misma composición que en horizontal: las de los costados más chicas y
+     atrás de la del centro. El alto va en vw (no aspect-ratio: con eso los %
+     de alto de las fotos no se resuelven) y el solape en % del ancho:
+     misma separación entre caras que con los -31vh de desktop. */
+  .escenario-fotos { position: relative; flex: none; height: 80vw; margin-top: 2vw; }
+  .escenario-foto--izq { margin-right: calc(-37% + 20px); }
+  .escenario-foto--der { margin-left: calc(-37% + 20px); }
   .escenario-pie { position: relative; bottom: auto; margin-top: -24vw; padding-bottom: 30px; }
   .escenario-pie::before { background: radial-gradient(ellipse 60% 60% at 50% 60%, rgba(10, 4, 20, 0.85), transparent 80%); width: 130%; bottom: -10px; }
 }

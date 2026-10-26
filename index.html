@@ -34,8 +34,10 @@
     <nav class="nav-links" id="navLinks">
       <a href="#inicio">Inicio</a>
       <a href="#fechas">Fechas</a>
+      <!-- Ocultas temporalmente (sacar el comentario para volver a mostrarlas):
       <a href="#biografia">Biografía</a>
       <a href="#granhermano">Gran Hermano</a>
+      -->
       <a href="#instagram">Instagram</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -59,21 +61,19 @@
     <div class="escenario-piso"></div>
     <div class="escenario-titulo">
       <p class="escenario-kicker">Stand-up comedy</p>
-      <h1 class="escenario-nombre texto-oro">Patotera</h1>
+      <h1 class="escenario-nombre escenario-nombre--logo"><img src="img/hero/logo.webp" alt="Patotera" width="707" height="312"></h1>
     </div>
-    <!-- Fotos sin fondo de img/escenario/: 1 al centro, 2 a la izquierda, 3 a la derecha (ver js/escenario.js) -->
-    <div class="escenario-fotos" data-carpeta="img/escenario/">
+    <!-- Fotos sin fondo de img/hero/ (los flyers usan img/escenario/): 1 al centro, 2 a la izquierda, 3 a la derecha (ver js/escenario.js) -->
+    <div class="escenario-fotos" data-carpeta="img/hero/">
       <img class="escenario-foto escenario-foto--izq" data-foto="2" alt="">
       <img class="escenario-foto escenario-foto--der" data-foto="3" alt="">
       <img class="escenario-foto escenario-foto--centro" data-foto="1" alt="Yipio">
-      <img class="escenario-foto escenario-foto--izq escenario-foto--cabeza" data-foto="2" alt="" aria-hidden="true">
-      <img class="escenario-foto escenario-foto--der escenario-foto--cabeza" data-foto="3" alt="" aria-hidden="true">
     </div>
     <div class="escenario-pie">
       <p class="escenario-show"><span>Gira 2026/2027</span></p>
       <div class="escenario-ctas">
         <a href="#fechas" class="btn btn-oro">Ver fechas</a>
-        <a href="#granhermano" class="btn btn-linea">Gran Hermano</a>
+        <!-- <a href="#granhermano" class="btn btn-linea">Gran Hermano</a> (oculto temporalmente) -->
       </div>
     </div>
   </div>
@@ -94,7 +94,8 @@
   </div>
 </section>
 
-<section id="biografia" class="section section-alt">
+<!-- Biografía oculta temporalmente: sacar "hidden" para volver a mostrarla. La galería de abajo queda visible. -->
+<section id="biografia" class="section section-alt" hidden>
   <header class="titulo-seccion">
     <p class="kicker">La comediante</p>
     <h2>Biografía</h2>
@@ -115,7 +116,8 @@
   <button class="lightbox-arrow lightbox-next" id="lightboxNext" aria-label="Siguiente">&#10095;</button>
 </div>
 
-<section id="granhermano" class="section gh">
+<!-- Gran Hermano oculto temporalmente: sacar "hidden" para volver a mostrarlo. -->
+<section id="granhermano" class="section gh" hidden>
   <div class="gh-luces" aria-hidden="true">
     <div class="reflector reflector--izq"></div>
     <div class="reflector reflector--purpura"></div>
