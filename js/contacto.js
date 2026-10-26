@@ -14,6 +14,7 @@
       const redes = cfg.redes || {};
 
       if (textoEl && contacto.texto) textoEl.textContent = contacto.texto;
+      else if (textoEl) textoEl.remove();
 
       if (botonesWrap) {
         const botones = [];
