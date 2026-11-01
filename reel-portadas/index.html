@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Yipio - Portadas de reels</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232a0d4d'/%3E%3Ctext x='50' y='76' font-size='74' font-weight='900' font-family='Arial Narrow,Arial' text-anchor='middle' fill='%23e4c06a'%3EY%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="../fonts/GCGrind.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Portada 9:16 para reels: una foto + un texto grande al medio. Todo se
+     dibuja en un canvas de 1080 × 1920, así que lo que se ve es lo que se
+     descarga (JPG). La foto se mueve arrastrándola y se agranda con la rueda
+     o con el control de zoom; el texto se sube y se baja arrastrándolo.
+     Las *palabras entre asteriscos* salen en el color de acento. Las bandas
+     rayadas marcan lo que Instagram corta en la grilla del perfil (3:4).
+     Lo que se escribe queda guardado en el navegador; la foto no. -->
+<style>
+  @font-face { font-family: 'Grind'; src: url('../fonts/GCGrind.woff2') format('woff2'); font-weight: 400 900; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Medium.woff2') format('woff2'); font-weight: 500; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Bold.woff2') format('woff2'); font-weight: 700; }
+
+  :root {
+    --negro: #07040c;
+    --fondo: #0c0614;
+    --fondo-2: #140a22;
+    --purpura: #6a1fb5;
+    --purpura-vivo: #8f3fe0;
+    --oro: #e4c06a;
+    --tinta: #1a0b05;
+    --texto: #f3edf9;
+    --texto-suave: #b9aad0;
+    --linea: rgba(228, 192, 106, 0.26);
+    --grad-oro: linear-gradient(100deg, #b8862b 0%, #f3d98f 18%, #fff5d6 28%, #d9ad4a 42%, #f6dc93 58%, #b8862b 76%, #f0cf7c 90%, #b8862b 100%);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--negro);
+    font-family: 'Grift', system-ui, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    color: var(--texto);
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    height: 100vh;
+  }
+
+  /* Panel de controles */
+  .panel {
+    overflow-y: auto;
+    padding: 24px 22px 28px;
+    background: var(--fondo);
+    border-right: 1px solid var(--linea);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .titulo small {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+  }
+  .titulo h1 {
+    font-family: 'Grind', Impact, sans-serif;
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1.1;
+    padding-top: 0.12em; /* Grind lleva las mayúsculas arriba del renglón */
+    text-transform: uppercase;
+    background: var(--grad-oro);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .grupo { display: flex; flex-direction: column; gap: 10px; }
+  .grupo-titulo {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--oro);
+  }
+  .ayuda { font-size: 13px; line-height: 1.4; color: var(--texto-suave); }
+  .ayuda b { color: var(--texto); font-weight: 700; }
+
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border: 1px solid var(--linea);
+    border-radius: 999px;
+    background: var(--fondo-2);
+    color: var(--texto);
+    font: inherit;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .boton:hover { border-color: var(--oro); }
+  .boton--oro { border: none; background: var(--grad-oro); color: var(--tinta); }
+  .boton:disabled { opacity: 0.5; cursor: default; }
+  .boton svg { width: 18px; height: 18px; flex: none; }
+
+  textarea {
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    padding: 12px 14px;
+    border: 1px solid var(--linea);
+    border-radius: 12px;
+    background: var(--fondo-2);
+    color: var(--texto);
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  textarea:focus { outline: 2px solid var(--purpura-vivo); outline-offset: 1px; }
+
+  .control { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 10px; font-size: 14px; }
+  .control output { text-align: right; color: var(--texto-suave); font-size: 13px; font-variant-numeric: tabular-nums; }
+  input[type="range"] { width: 100%; accent-color: var(--oro); }
+  input[type="range"]:disabled { opacity: 0.4; }
+
+  .check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--oro); }
+
+  /* Estilos del texto: cuatro botones con una muestra */
+  .estilos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .estilos input { position: absolute; opacity: 0; pointer-events: none; }
+  .estilos label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px 9px;
+    border: 1px solid var(--linea);
+    border-radius: 12px;
+    background: var(--fondo-2);
+    font-size: 12px;
+    color: var(--texto-suave);
+    cursor: pointer;
+  }
+  .estilos input:checked + label { border-color: var(--oro); box-shadow: 0 0 0 1px var(--oro); color: var(--texto); }
+  .estilos input:focus-visible + label { outline: 2px solid var(--purpura-vivo); outline-offset: 2px; }
+  .muestra {
+    font-family: 'Grind', Impact, sans-serif;
+    font-size: 24px;
+    line-height: 1;
+    padding: 0.2em 0.3em 0.05em;
+    letter-spacing: 0.02em;
+  }
+  .muestra--contorno { color: #fff; -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 2px 3px 0 #000; }
+  .muestra--oro {
+    background: var(--grad-oro); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 1px #1a0b05) drop-shadow(0 0 1px #1a0b05) drop-shadow(0 0 1px #1a0b05);
+  }
+  .muestra--caja-purpura { background: var(--purpura); color: #fff; border-radius: 5px; }
+  .muestra--caja-oro { background: var(--grad-oro); color: var(--tinta); border-radius: 5px; }
+
+  .descarga { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 4px; }
+  .descarga .botones { display: flex; gap: 8px; }
+  .descarga .boton { flex: 1; }
+  #estado { font-size: 13px; color: var(--texto-suave); text-align: center; min-height: 1.2em; }
+
+  /* Vista previa */
+  .escenario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    min-width: 0;
+    min-height: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(106, 31, 181, 0.18), transparent 60%),
+      var(--negro);
+  }
+
+  .marco {
+    position: relative;
+    height: 100%;
+    max-width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--linea), 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+  body.arrastrando .marco { box-shadow: 0 0 0 3px var(--oro), 0 20px 60px rgba(0, 0, 0, 0.6); }
+
+  #lienzo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+
+  /* Recorte de la grilla del perfil: 1080 × 1440 al centro, se pierden
+     240 px arriba y 240 abajo (12,5 % cada uno) */
+  .guia { position: absolute; inset: 0; pointer-events: none; }
+  .guia-banda {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 12.5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: repeating-linear-gradient(-45deg, rgba(7, 4, 12, 0.55) 0 10px, rgba(7, 4, 12, 0.35) 10px 20px);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .guia-banda--arriba { top: 0; border-bottom: 1px dashed rgba(228, 192, 106, 0.8); }
+  .guia-banda--abajo { bottom: 0; border-top: 1px dashed rgba(228, 192, 106, 0.8); }
+  .sin-guia .guia { display: none; }
+
+  /* Cartel para subir la foto cuando todavía no hay ninguna */
+  .subir {
+    position: absolute;
+    left: 50%;
+    top: 22%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 22px;
+    border: 1px dashed rgba(228, 192, 106, 0.7);
+    border-radius: 16px;
+    background: rgba(12, 6, 20, 0.7);
+    text-align: center;
+    font-size: 14px;
+    color: var(--texto-suave);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .subir strong { color: var(--texto); font-size: 16px; }
+  .subir svg { width: 30px; height: 30px; color: var(--oro); }
+  .con-foto .subir { display: none; }
+
+  .oculto { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+  /* Celular: la vista previa arriba (fija mientras se baja por los controles) */
+  @media (max-width: 820px) {
+    .app { display: flex; flex-direction: column; height: auto; }
+    .escenario {
+      order: -1;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--linea);
+    }
+    .marco { height: auto; width: min(100%, calc(52vh * 9 / 16)); border-radius: 10px; }
+    .panel { border-right: none; padding: 20px 16px 32px; overflow: visible; }
+    .subir { padding: 12px 14px; font-size: 12px; }
+    .subir strong { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="panel">
+    <header class="titulo">
+      <small>Yipio · herramienta</small>
+      <h1>Portadas de reels</h1>
+    </header>
+
+    <section class="grupo">
+      <h2 class="grupo-titulo">Foto</h2>
+      <label class="boton" for="archivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        <span id="texto-subir">Subir foto</span>
+      </label>
+      <input class="oculto" type="file" id="archivo" accept="image/*">
+      <p class="ayuda">También podés <b>arrastrarla</b> encima o <b>pegarla</b> (Ctrl+V). En la vista previa: arrastrá la foto para moverla, rueda para acercar, doble clic para centrarla.</p>
+      <div class="control">
+        <label for="zoom">Zoom</label>
+        <input type="range" id="zoom" min="100" max="400" step="1" value="100" disabled>
+        <output id="zoom-v">100%</output>
+      </div>
+      <div class="control">
+        <label for="oscurecer">Oscurecer</label>
+        <input type="range" id="oscurecer" min="0" max="70" step="1" value="0">
+        <output id="oscurecer-v">0%</output>
+      </div>
+    </section>
+
+    <section class="grupo">
+      <h2 class="grupo-titulo"><label for="texto">Texto</label></h2>
+      <textarea id="texto" spellcheck="true"></textarea>
+      <p class="ayuda"><b>Enter</b> para cortar el renglón. Poné <b>*palabras*</b> entre asteriscos para resaltarlas.</p>
+    </section>
+
+    <section class="grupo">
+      <h2 class="grupo-titulo">Estilo</h2>
+      <div class="estilos">
+        <input type="radio" name="estilo" id="e-contorno" value="contorno">
+        <label for="e-contorno"><span class="muestra muestra--contorno">Aa</span>Contorno</label>
+        <input type="radio" name="estilo" id="e-oro" value="oro">
+        <label for="e-oro"><span class="muestra muestra--oro">Aa</span>Dorado</label>
+        <input type="radio" name="estilo" id="e-caja-purpura" value="caja-purpura">
+        <label for="e-caja-purpura"><span class="muestra muestra--caja-purpura">Aa</span>Caja púrpura</label>
+        <input type="radio" name="estilo" id="e-caja-oro" value="caja-oro">
+        <label for="e-caja-oro"><span class="muestra muestra--caja-oro">Aa</span>Caja dorada</label>
+      </div>
+      <div class="control">
+        <label for="tam">Tamaño</label>
+        <input type="range" id="tam" min="60" max="240" step="1">
+        <output id="tam-v"></output>
+      </div>
+      <div class="control">
+        <label for="altura">Altura</label>
+        <input type="range" id="altura" min="8" max="92" step="0.5">
+        <output id="altura-v"></output>
+      </div>
+      <div class="control">
+        <label for="inclinar">Inclinar</label>
+        <input type="range" id="inclinar" min="-12" max="12" step="0.5">
+        <output id="inclinar-v"></output>
+      </div>
+      <label class="check"><input type="checkbox" id="mayus"> Todo en mayúsculas</label>
+      <label class="check"><input type="checkbox" id="guia"> Mostrar el recorte del perfil (3:4)</label>
+    </section>
+
+    <section class="descarga">
+      <div class="botones">
+        <button type="button" class="boton boton--oro" id="descargar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+          Descargar
+        </button>
+        <button type="button" class="boton" id="compartir" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+          Compartir
+        </button>
+      </div>
+      <p id="estado">JPG de 1080 × 1920 px</p>
+    </section>
+  </aside>
+
+  <main class="escenario">
+    <div class="marco" id="marco">
+      <canvas id="lienzo" width="1080" height="1920" aria-label="Vista previa de la portada"></canvas>
+      <div class="guia" aria-hidden="true">
+        <div class="guia-banda guia-banda--arriba">Se corta en el perfil</div>
+        <div class="guia-banda guia-banda--abajo">Se corta en el perfil</div>
+      </div>
+      <label class="subir" for="archivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Subí una foto</strong>
+        o arrastrala acá
+      </label>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  const W = 1080;
+  const H = 1920;
+  const CLAVE = 'yipio-reel-portada';
+  const $ = (id) => document.getElementById(id);
+  const lienzo = $('lienzo');
+  const ctx = lienzo.getContext('2d');
+  const marco = $('marco');
+
+  const POR_DEFECTO = {
+    texto: 'Estás en\nun cumple',
+    estilo: 'contorno',
+    tam: 130,
+    altura: 50,
+    inclinar: 0,
+    mayus: true,
+    oscurecer: 0,
+    guia: true,
+  };
+
+  // Colores de cada estilo. 'oro' = degradé dorado de la web.
+  const ESTILOS = {
+    contorno: { relleno: '#fff', acento: 'oro', borde: '#000', sombra: 'dura' },
+    oro: { relleno: 'oro', acento: '#fff', borde: '#1a0b05', sombra: 'suave' },
+    'caja-purpura': { relleno: '#fff', acento: 'oro', caja: '#6a1fb5' },
+    'caja-oro': { relleno: '#1a0b05', acento: '#6a1fb5', caja: 'oro' },
+  };
+  const PARADAS_ORO = [
+    [0, '#b8862b'], [0.18, '#f3d98f'], [0.28, '#fff5d6'], [0.42, '#d9ad4a'],
+    [0.58, '#f6dc93'], [0.76, '#b8862b'], [0.9, '#f0cf7c'], [1, '#b8862b'],
+  ];
+
+  let est = Object.assign({}, POR_DEFECTO, leerGuardado());
+  if (!ESTILOS[est.estilo]) est.estilo = POR_DEFECTO.estilo;
+  let foto = null;
+  let zoom = 1;
+  let panX = 0;
+  let panY = 0;
+  let cajaTexto = null; // dónde quedó el texto, para poder arrastrarlo
+  let arrastre = null;
+
+  function leerGuardado() {
+    try { return JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { return {}; }
+  }
+  function guardar() {
+    try { localStorage.setItem(CLAVE, JSON.stringify(est)); } catch (e) { /* sin almacenamiento */ }
+  }
+
+  const limitar = (v, min, max) => Math.min(max, Math.max(min, v));
+
+  /* ---------- Foto ---------- */
+
+  function escalaFoto() {
+    return Math.max(W / foto.naturalWidth, H / foto.naturalHeight) * zoom;
+  }
+
+  // La foto siempre cubre todo el lienzo: el corrimiento no puede dejar huecos
+  function limitarPan() {
+    const s = escalaFoto();
+    const mx = Math.max(0, (foto.naturalWidth * s - W) / 2);
+    const my = Math.max(0, (foto.naturalHeight * s - H) / 2);
+    panX = limitar(panX, -mx, mx);
+    panY = limitar(panY, -my, my);
+  }
+
+  function cambiarZoom(nuevo) {
+    nuevo = limitar(nuevo, 1, 4);
+    panX *= nuevo / zoom;
+    panY *= nuevo / zoom;
+    zoom = nuevo;
+    $('zoom').value = Math.round(zoom * 100);
+    $('zoom-v').textContent = `${Math.round(zoom * 100)}%`;
+    dibujar();
+  }
+
+  function cargarFoto(archivo) {
+    if (!archivo || !/^image\//.test(archivo.type)) {
+      avisar('Eso no es una imagen.');
+      return;
+    }
+    const url = URL.createObjectURL(archivo);
+    const img = new Image();
+    img.onload = () => {
+      if (foto) URL.revokeObjectURL(foto.src);
+      foto = img;
+      zoom = 1;
+      panX = 0;
+      panY = 0;
+      $('zoom').disabled = false;
+      cambiarZoom(1);
+      marco.classList.add('con-foto');
+      $('texto-subir').textContent = 'Cambiar foto';
+      avisar('JPG de 1080 × 1920 px');
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      avisar('No se pudo abrir la imagen. Probá con un JPG o PNG.');
+    };
+    img.src = url;
+  }
+
+  /* ---------- Texto ---------- */
+
+  // Devuelve renglones -> palabras -> tramos {t, acento}. Los asteriscos
+  // prenden y apagan el acento (puede seguir de un renglón al otro).
+  function parsear(texto) {
+    let acento = false;
+    return texto.split('\n').map((renglon) => {
+      const palabras = [];
+      let palabra = [];
+      for (const ch of renglon) {
+        if (ch === '*') {
+          acento = !acento;
+        } else if (/\s/.test(ch)) {
+          if (palabra.length) palabras.push(palabra);
+          palabra = [];
+        } else {
+          const c = est.mayus ? ch.toLocaleUpperCase('es') : ch;
+          const ult = palabra[palabra.length - 1];
+          if (ult && ult.acento === acento) ult.t += c;
+          else palabra.push({ t: c, acento });
+        }
+      }
+      if (palabra.length) palabras.push(palabra);
+      return palabras;
+    });
+  }
+
+  // Corta los renglones largos para que entren en el ancho
+  function armar(tam, anchoMax) {
+    ctx.font = `${tam}px Grind`;
+    const espacio = tam * 0.26;
+    const lineas = [];
+    parsear(est.texto).forEach((palabras) => {
+      let actual = [];
+      let ancho = 0;
+      palabras.forEach((p) => {
+        p.forEach((r) => { r.w = ctx.measureText(r.t).width; });
+        const w = p.reduce((s, r) => s + r.w, 0);
+        if (actual.length && ancho + espacio + w > anchoMax) {
+          lineas.push({ palabras: actual, ancho });
+          actual = [];
+          ancho = 0;
+        }
+        ancho += (actual.length ? espacio : 0) + w;
+        actual.push(p);
+      });
+      lineas.push({ palabras: actual, ancho });
+    });
+    // Sin renglones vacíos al principio ni al final
+    while (lineas.length && !lineas[0].palabras.length) lineas.shift();
+    while (lineas.length && !lineas[lineas.length - 1].palabras.length) lineas.pop();
+    return { lineas, espacio };
+  }
+
+  function degradeOro(x0, y0, x1, y1) {
+    const g = ctx.createLinearGradient(x0, y0, x1, y1);
+    PARADAS_ORO.forEach(([p, c]) => g.addColorStop(p, c));
+    return g;
+  }
+
+  function dibujarTexto() {
+    cajaTexto = null;
+    const e = ESTILOS[est.estilo];
+    const conCaja = Boolean(e.caja);
+    const anchoMax = W * (conCaja ? 0.76 : 0.84);
+
+    // Si una palabra sola no entra, se achica todo el texto
+    let tam = est.tam;
+    let armado = armar(tam, anchoMax);
+    const mayor = Math.max(0, ...armado.lineas.map((l) => l.ancho));
+    if (mayor > anchoMax) {
+      tam *= anchoMax / mayor;
+      armado = armar(tam, anchoMax);
+    }
+    const { lineas, espacio } = armado;
+    if (!lineas.length) return;
+
+    ctx.font = `${tam}px Grind`;
+    const altoMayus = ctx.measureText('H').actualBoundingBoxAscent;
+    const rellenoX = tam * 0.2;
+    const rellenoY = tam * 0.17;
+    const paso = conCaja ? altoMayus + rellenoY * 2 + tam * 0.05 : altoMayus + tam * 0.3;
+    const alto = (lineas.length - 1) * paso + altoMayus;
+    const cy = H * est.altura / 100;
+    const arriba = -alto / 2;
+
+    // Posición de cada tramo, relativa al centro del bloque
+    const tramos = [];
+    lineas.forEach((l, i) => {
+      l.base = arriba + altoMayus + i * paso;
+      let x = -l.ancho / 2;
+      l.palabras.forEach((p) => {
+        p.forEach((r) => {
+          tramos.push({ t: r.t, acento: r.acento, x, y: l.base, linea: l });
+          x += r.w;
+        });
+        x += espacio;
+      });
+    });
+
+    const pintura = (color, l) => (color === 'oro'
+      ? degradeOro(-l.ancho / 2, l.base - altoMayus, l.ancho / 2, l.base)
+      : color);
+
+    ctx.save();
+    ctx.translate(W / 2, cy);
+    ctx.rotate(est.inclinar * Math.PI / 180);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    ctx.lineJoin = 'round';
+
+    if (conCaja) {
+      lineas.forEach((l) => {
+        if (!l.palabras.length) return;
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+        ctx.shadowBlur = tam * 0.3;
+        ctx.shadowOffsetY = tam * 0.06;
+        ctx.fillStyle = pintura(e.caja, l);
+        ctx.beginPath();
+        ctx.roundRect(-l.ancho / 2 - rellenoX, l.base - altoMayus - rellenoY,
+          l.ancho + rellenoX * 2, altoMayus + rellenoY * 2, tam * 0.14);
+        ctx.fill();
+        ctx.restore();
+      });
+    } else {
+      const grosor = tam * 0.2;
+      ctx.lineWidth = grosor;
+      ctx.strokeStyle = e.borde;
+      // Sombra: dura y corrida (como un sticker) o suave y difusa
+      ctx.save();
+      if (e.sombra === 'dura') {
+        const dx = tam * 0.035;
+        const dy = tam * 0.05;
+        ctx.fillStyle = e.borde;
+        tramos.forEach((t) => {
+          ctx.strokeText(t.t, t.x + dx, t.y + dy);
+          ctx.fillText(t.t, t.x + dx, t.y + dy);
+        });
+      } else {
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+        ctx.shadowBlur = tam * 0.35;
+        ctx.shadowOffsetY = tam * 0.05;
+        tramos.forEach((t) => ctx.strokeText(t.t, t.x, t.y));
+      }
+      ctx.restore();
+      // Todo el borde primero y después el relleno, así un borde no tapa la
+      // letra de al lado
+      tramos.forEach((t) => ctx.strokeText(t.t, t.x, t.y));
+    }
+
+    tramos.forEach((t) => {
+      ctx.fillStyle = pintura(t.acento ? e.acento : e.relleno, t.linea);
+      ctx.fillText(t.t, t.x, t.y);
+    });
+    ctx.restore();
+
+    const anchoBloque = Math.max(...lineas.map((l) => l.ancho)) + tam * 0.5;
+    cajaTexto = {
+      x: W / 2 - anchoBloque / 2,
+      y: cy - alto / 2 - tam * 0.3,
+      w: anchoBloque,
+      h: alto + tam * 0.6,
+    };
+  }
+
+  /* ---------- Lienzo ---------- */
+
+  function dibujar() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (foto) {
+      limitarPan();
+      const s = escalaFoto();
+      const dw = foto.naturalWidth * s;
+      const dh = foto.naturalHeight * s;
+      ctx.drawImage(foto, (W - dw) / 2 + panX, (H - dh) / 2 + panY, dw, dh);
+    } else {
+      const g = ctx.createRadialGradient(W / 2, H * 0.42, 40, W / 2, H * 0.5, H * 0.75);
+      g.addColorStop(0, '#3a136c');
+      g.addColorStop(0.55, '#170a29');
+      g.addColorStop(1, '#07040c');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+    if (est.oscurecer > 0) {
+      ctx.fillStyle = `rgba(7, 4, 12, ${est.oscurecer / 100})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+    dibujarTexto();
+  }
+
+  function aLienzo(ev) {
+    const r = lienzo.getBoundingClientRect();
+    return { x: (ev.clientX - r.left) * W / r.width, y: (ev.clientY - r.top) * H / r.height };
+  }
+  function sobreTexto(p) {
+    const c = cajaTexto;
+    return c && p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h;
+  }
+
+  lienzo.addEventListener('pointerdown', (ev) => {
+    const p = aLienzo(ev);
+    const modo = sobreTexto(p) ? 'texto' : (foto ? 'foto' : null);
+    if (!modo) return;
+    arrastre = { modo, x: p.x, y: p.y, panX, panY, altura: est.altura };
+    lienzo.setPointerCapture(ev.pointerId);
+    lienzo.style.cursor = modo === 'texto' ? 'ns-resize' : 'grabbing';
+  });
+
+  lienzo.addEventListener('pointermove', (ev) => {
+    const p = aLienzo(ev);
+    if (!arrastre) {
+      lienzo.style.cursor = sobreTexto(p) ? 'ns-resize' : (foto ? 'grab' : 'default');
+      return;
+    }
+    if (arrastre.modo === 'texto') {
+      let a = limitar(arrastre.altura + (p.y - arrastre.y) / H * 100, 8, 92);
+      if (Math.abs(a - 50) < 1.2) a = 50; // se imanta al centro
+      est.altura = Math.round(a * 2) / 2;
+      sincronizar();
+    } else {
+      panX = arrastre.panX + p.x - arrastre.x;
+      panY = arrastre.panY + p.y - arrastre.y;
+    }
+    dibujar();
+  });
+
+  function soltar() {
+    if (!arrastre) return;
+    arrastre = null;
+    lienzo.style.cursor = '';
+    guardar();
+  }
+  lienzo.addEventListener('pointerup', soltar);
+  lienzo.addEventListener('pointercancel', soltar);
+
+  lienzo.addEventListener('wheel', (ev) => {
+    if (!foto) return;
+    ev.preventDefault();
+    cambiarZoom(zoom * Math.exp(-ev.deltaY * 0.0015));
+  }, { passive: false });
+
+  lienzo.addEventListener('dblclick', () => {
+    if (!foto) return;
+    panX = 0;
+    panY = 0;
+    cambiarZoom(1);
+  });
+
+  /* ---------- Controles ---------- */
+
+  const DESLIZADORES = {
+    tam: (v) => `${v}`,
+    altura: (v) => `${Math.round(v)}%`,
+    inclinar: (v) => `${v}°`,
+    oscurecer: (v) => `${v}%`,
+  };
+
+  function sincronizar() {
+    $('texto').value = est.texto;
+    $(`e-${est.estilo}`).checked = true;
+    Object.keys(DESLIZADORES).forEach((k) => {
+      $(k).value = est[k];
+      $(`${k}-v`).textContent = DESLIZADORES[k](est[k]);
+    });
+    $('mayus').checked = est.mayus;
+    $('guia').checked = est.guia;
+    marco.classList.toggle('sin-guia', !est.guia);
+  }
+
+  function cambiar(campo, valor) {
+    est[campo] = valor;
+    sincronizar();
+    dibujar();
+    guardar();
+  }
+
+  $('texto').addEventListener('input', (ev) => cambiar('texto', ev.target.value));
+  document.querySelectorAll('input[name="estilo"]').forEach((r) => {
+    r.addEventListener('change', () => cambiar('estilo', r.value));
+  });
+  Object.keys(DESLIZADORES).forEach((k) => {
+    $(k).addEventListener('input', (ev) => cambiar(k, Number(ev.target.value)));
+  });
+  $('mayus').addEventListener('change', (ev) => cambiar('mayus', ev.target.checked));
+  $('guia').addEventListener('change', (ev) => cambiar('guia', ev.target.checked));
+  $('zoom').addEventListener('input', (ev) => cambiarZoom(Number(ev.target.value) / 100));
+
+  $('archivo').addEventListener('change', (ev) => {
+    cargarFoto(ev.target.files[0]);
+    ev.target.value = '';
+  });
+
+  // Arrastrar una foto a cualquier parte de la página, o pegarla
+  let capas = 0;
+  window.addEventListener('dragenter', (ev) => {
+    if (!ev.dataTransfer.types.includes('Files')) return;
+    capas++;
+    document.body.classList.add('arrastrando');
+  });
+  window.addEventListener('dragleave', () => {
+    capas = Math.max(0, capas - 1);
+    if (!capas) document.body.classList.remove('arrastrando');
+  });
+  window.addEventListener('dragover', (ev) => ev.preventDefault());
+  window.addEventListener('drop', (ev) => {
+    ev.preventDefault();
+    capas = 0;
+    document.body.classList.remove('arrastrando');
+    if (ev.dataTransfer.files.length) cargarFoto(ev.dataTransfer.files[0]);
+  });
+  window.addEventListener('paste', (ev) => {
+    const item = Array.from(ev.clipboardData.items).find((i) => i.type.startsWith('image/'));
+    if (item) cargarFoto(item.getAsFile());
+  });
+
+  /* ---------- Descarga ---------- */
+
+  function avisar(texto) { $('estado').textContent = texto; }
+
+  function nombreArchivo() {
+    const base = est.texto
+      .replace(/\*/g, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40)
+      .replace(/-+$/, '');
+    return `portada-${base || 'reel'}.jpg`;
+  }
+
+  function generar() {
+    dibujar();
+    return new Promise((ok, mal) => {
+      lienzo.toBlob((b) => (b ? ok(b) : mal()), 'image/jpeg', 0.95);
+    });
+  }
+
+  $('descargar').addEventListener('click', () => {
+    generar()
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombreArchivo();
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        avisar(`Listo: ${a.download}`);
+      })
+      .catch(() => avisar('No se pudo generar la imagen.'));
+  });
+
+  // En el celular: compartir directo (a Instagram, WhatsApp, Fotos…)
+  try {
+    const prueba = new File([new Blob()], 'a.jpg', { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [prueba] })) $('compartir').hidden = false;
+  } catch (e) { /* sin compartir */ }
+
+  $('compartir').addEventListener('click', () => {
+    generar()
+      .then((blob) => navigator.share({ files: [new File([blob], nombreArchivo(), { type: 'image/jpeg' })] }))
+      .catch((err) => { if (err && err.name !== 'AbortError') avisar('No se pudo compartir.'); });
+  });
+
+  /* ---------- Arranque ---------- */
+
+  sincronizar();
+  dibujar();
+  // El canvas no espera a la fuente: se redibuja cuando termina de cargar
+  document.fonts.load('100px Grind').then(dibujar);
+})();
+</script>
+</body>
+</html>
