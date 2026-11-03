@@ -324,6 +324,11 @@
         <output id="tam-v"></output>
       </div>
       <div class="control">
+        <label for="interletrado">Interletrado</label>
+        <input type="range" id="interletrado" min="-5" max="30" step="1">
+        <output id="interletrado-v"></output>
+      </div>
+      <div class="control">
         <label for="altura">Altura</label>
         <input type="range" id="altura" min="8" max="92" step="0.5">
         <output id="altura-v"></output>
@@ -372,7 +377,7 @@
 (function () {
   const W = 1080;
   const H = 1920;
-  const CLAVE = 'yipio-reel-portada';
+  const CLAVE = 'yipio-reel-portada-2';
   const $ = (id) => document.getElementById(id);
   const lienzo = $('lienzo');
   const ctx = lienzo.getContext('2d');
@@ -380,9 +385,10 @@
 
   const POR_DEFECTO = {
     texto: 'Estás en\nun cumple',
-    estilo: 'contorno',
-    tam: 130,
-    altura: 50,
+    estilo: 'caja-purpura',
+    tam: 110,
+    interletrado: 0,
+    altura: 55,
     inclinar: 0,
     mayus: true,
     oscurecer: 0,
@@ -500,6 +506,9 @@
   // Corta los renglones largos para que entren en el ancho
   function armar(tam, anchoMax) {
     ctx.font = `${tam}px Grind`;
+    // letterSpacing también suma después de la última letra: se descuenta por palabra
+    const ls = tam * est.interletrado / 100;
+    ctx.letterSpacing = `${ls}px`;
     const espacio = tam * 0.26;
     const lineas = [];
     parsear(est.texto).forEach((palabras) => {
@@ -507,7 +516,7 @@
       let ancho = 0;
       palabras.forEach((p) => {
         p.forEach((r) => { r.w = ctx.measureText(r.t).width; });
-        const w = p.reduce((s, r) => s + r.w, 0);
+        const w = p.reduce((s, r) => s + r.w, 0) - ls;
         if (actual.length && ancho + espacio + w > anchoMax) {
           lineas.push({ palabras: actual, ancho });
           actual = [];
@@ -521,7 +530,7 @@
     // Sin renglones vacíos al principio ni al final
     while (lineas.length && !lineas[0].palabras.length) lineas.shift();
     while (lineas.length && !lineas[lineas.length - 1].palabras.length) lineas.pop();
-    return { lineas, espacio };
+    return { lineas, espacio, ls };
   }
 
   function degradeOro(x0, y0, x1, y1) {
@@ -544,7 +553,7 @@
       tam *= anchoMax / mayor;
       armado = armar(tam, anchoMax);
     }
-    const { lineas, espacio } = armado;
+    const { lineas, espacio, ls } = armado;
     if (!lineas.length) return;
 
     ctx.font = `${tam}px Grind`;
@@ -566,7 +575,7 @@
           tramos.push({ t: r.t, acento: r.acento, x, y: l.base, linea: l });
           x += r.w;
         });
-        x += espacio;
+        x += espacio - ls;
       });
     });
 
@@ -626,6 +635,7 @@
       ctx.fillText(t.t, t.x, t.y);
     });
     ctx.restore();
+    ctx.letterSpacing = '0px';
 
     const anchoBloque = Math.max(...lineas.map((l) => l.ancho)) + tam * 0.5;
     cajaTexto = {
@@ -723,6 +733,7 @@
 
   const DESLIZADORES = {
     tam: (v) => `${v}`,
+    interletrado: (v) => `${v}`,
     altura: (v) => `${Math.round(v)}%`,
     inclinar: (v) => `${v}°`,
     oscurecer: (v) => `${v}%`,
