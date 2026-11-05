@@ -40,6 +40,7 @@ A los reels nuevos les pone de texto la primera línea del reel: revisarlo antes
 
 `carrete/` (http://localhost:4600/carrete/) arma las placas 1, 3, 4, 5 y 6 del carrete del sorteo Ciberlunes
 (la 2/6 la pone Colonia). Fotos por defecto en `carrete/img/`; se cambian desde la página y se descargan en PNG 1080 × 782.
+Es solo local: la carpeta está en `.gitignore` y no se sube a GitHub.
 
 ## Archivos que se detectan solos (sin tocar JSON)
 
