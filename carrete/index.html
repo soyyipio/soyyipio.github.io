@@ -7,55 +7,60 @@
 <title>Carrete Colonia Express</title>
 <!-- Carrete de Instagram (sorteo Ciberlunes con Colonia Express).
      Cada placa mide 1080 × 782 y se descarga en PNG tal cual se ve.
+     Estética: azul degradé + verde del sponsor (Ciberlunes) con los recursos
+     de yipio.com.uy: Grind/Grift, tickets con muescas, cintas, destellos ✦.
      - Fotos: "Cambiar foto" o soltar un archivo encima de la placa.
-       Se mueven arrastrando y se agrandan con la rueda del mouse.
+       Se mueven arrastrando, rueda = zoom, doble clic = volver a centrar.
      - Textos: clic encima y se escriben. Quedan guardados en el navegador.
      - La 2/6 no está: es la placa de Colonia Express. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&family=Caveat+Brush&family=Kalam:wght@700&family=Nunito:ital,wght@1,800;1,900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<link rel="preload" href="../fonts/GCGrind.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  @font-face { font-family: 'Grind'; src: url('../fonts/GCGrind.woff2') format('woff2'); font-weight: 400 900; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Medium.woff2') format('woff2'); font-weight: 500; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-SemiBold.woff2') format('woff2'); font-weight: 600; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Bold.woff2') format('woff2'); font-weight: 700; }
+
   :root {
-    --azul: #3a24d4;
-    --azul-osc: #2716a6;
-    --rosa: #ff1f8f;
-    --verde: #3ff04f;
-    --tinta: #211874;
-    /* Pinceladas: manchas con borde irregular y pelos de pincel en las puntas */
-    --brocha-rosa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cg fill='%23ff1f8f'%3E%3Cpath d='M14 20 C70 9 140 15 212 11 C282 7 338 5 388 13 L383 27 L396 36 L386 49 C393 62 382 73 391 87 C322 95 250 88 180 92 C112 96 62 89 14 95 L21 81 L5 71 L16 58 L4 45 L17 33 Z'/%3E%3Cpath d='M380 18 L399 21 L397 26 L379 25 Z M384 58 L400 61 L398 65 L383 64 Z M2 26 L20 24 L19 29 L1 31 Z M0 82 L18 79 L18 84 L1 87 Z'/%3E%3C/g%3E%3C/svg%3E");
-    --brocha-verde: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cg fill='%233ff04f'%3E%3Cpath d='M10 24 C80 12 150 18 220 12 C290 6 340 8 392 10 L384 26 L397 40 L387 52 C394 66 384 76 393 88 C320 94 252 90 182 93 C112 96 64 92 12 92 L20 78 L4 66 L15 54 L3 40 L15 32 Z'/%3E%3Cpath d='M382 14 L400 18 L398 23 L381 21 Z M386 70 L400 72 L399 77 L385 76 Z M0 46 L18 44 L18 49 L1 51 Z'/%3E%3C/g%3E%3C/svg%3E");
+    --azul-noche: #17126b;
+    --azul-osc: #221c9e;
+    --azul: #3a32ee;
+    --azul-tinta: #1b1680;
+    --verde: #2ff28c;
+    --verde-osc: #17c96b;
+    --blanco: #ffffff;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     min-height: 100vh;
-    background: #0e0b24;
-    color: #ece9ff;
-    font: 15px/1.4 system-ui, 'Segoe UI', sans-serif;
+    background: #0d0a2e;
+    color: #ecebff;
+    font: 15px/1.4 'Grift', system-ui, 'Segoe UI', sans-serif;
+    font-weight: 500;
   }
 
   header {
     position: sticky; top: 0; z-index: 10;
     display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
     padding: 14px 24px;
-    background: rgba(14, 11, 36, 0.92);
+    background: rgba(13, 10, 46, 0.92);
     backdrop-filter: blur(6px);
-    border-bottom: 1px solid #2c2660;
+    border-bottom: 1px solid #28237a;
   }
-  header h1 { font-size: 18px; font-weight: 700; }
-  header p { color: #a49fd0; font-size: 13px; flex: 1; min-width: 240px; }
+  header h1 { font: 400 26px/1 'Grind', Impact, sans-serif; padding-top: .12em; letter-spacing: .02em; text-transform: uppercase; }
+  header h1 span { color: var(--verde); }
+  header p { color: #a7a3e0; font-size: 13px; flex: 1; min-width: 240px; }
 
   button, .boton {
-    font: 600 14px system-ui, 'Segoe UI', sans-serif;
-    color: #fff; background: #3a2fa0;
-    border: 0; border-radius: 8px;
-    padding: 8px 14px; cursor: pointer;
+    font: 700 14px 'Grift', system-ui, sans-serif;
+    color: #fff; background: #2f2a9a;
+    border: 0; border-radius: 999px;
+    padding: 8px 16px; cursor: pointer;
   }
-  button:hover, .boton:hover { background: #4b3fc4; }
-  button.principal { background: var(--rosa); }
-  button.principal:hover { background: #ff4aa5; }
+  button:hover, .boton:hover { background: #3f38c8; }
+  button.principal { background: var(--verde); color: var(--azul-tinta); }
+  button.principal:hover { background: #6ff7b0; }
   button:disabled { opacity: .5; cursor: wait; }
 
   .grilla {
@@ -63,7 +68,7 @@
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 540px), 1fr));
     gap: 28px 20px;
     padding: 24px;
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
   }
 
@@ -77,37 +82,57 @@
     background: #000;
   }
   .marco.soltando { outline: 4px dashed var(--verde); outline-offset: -4px; }
-  .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: #a49fd0; }
+  .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: #a7a3e0; }
   .acciones label.chk { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-  .acciones .nombre { margin-right: auto; font-weight: 700; color: #ece9ff; }
+  .acciones .nombre { margin-right: auto; font-weight: 700; color: #ecebff; }
 
   .hueco {
     display: grid; place-items: center; text-align: center;
     aspect-ratio: 1080 / 782;
-    border: 2px dashed #3a3470; border-radius: 6px;
-    color: #6f68a8; font-size: 14px; padding: 20px;
+    border: 2px dashed #34307a; border-radius: 6px;
+    color: #706bb0; font-size: 14px; padding: 20px;
   }
 
-  /* ───────────── Placas (tamaño real 1080 × 782) ───────────── */
+  /* ───────────── Placas (tamaño real 1080 × 1350) ───────────── */
   .placa {
     position: absolute; top: 0; left: 0;
     width: 1080px; height: 782px;
     transform-origin: 0 0;
     overflow: hidden;
-    background:
-      radial-gradient(70% 80% at 85% 0%, #6a4cff 0%, transparent 70%),
-      radial-gradient(60% 70% at 10% 100%, #2a12a0 0%, transparent 70%),
-      linear-gradient(160deg, #4a30e6 0%, var(--azul) 45%, var(--azul-osc) 100%);
-    font-family: 'Kalam', 'Comic Sans MS', cursive;
-    font-weight: 700;
+    background: linear-gradient(180deg, var(--azul-noche) 0%, var(--azul-osc) 42%, var(--azul) 100%);
+    font-family: 'Grift', sans-serif;
+    font-weight: 600;
     color: #fff;
     user-select: none;
   }
   .placa * { -webkit-user-drag: none; }
 
+  /* Cielo de yipio.com.uy: puntitos y destellos */
+  .cielo {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 18%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.4px 1.4px at 78% 9%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1.8px 1.8px at 91% 34%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.4px 1.4px at 34% 41%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1.6px 1.6px at 6% 63%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.4px 1.4px at 58% 72%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.8px 1.8px at 86% 86%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.4px 1.4px at 22% 93%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1.2px 1.2px at 47% 6%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.2px 1.2px at 69% 52%, rgba(255,255,255,.4), transparent);
+  }
+  .destello { position: absolute; pointer-events: none; }
+  .destello path { fill: currentColor; }
+
   .foto { position: absolute; overflow: hidden; cursor: grab; touch-action: none; }
   .foto.moviendo { cursor: grabbing; }
   .foto img { position: absolute; left: 50%; top: 50%; max-width: none; pointer-events: none; }
+  /* Foto que se funde con el azul hacia abajo */
+  .foto.funde {
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  }
 
   .capa { position: absolute; pointer-events: none; }
   [data-k] { pointer-events: auto; outline: none; cursor: text; user-select: text; }
@@ -115,161 +140,232 @@
   [data-k]:focus { box-shadow: 0 0 0 2px #fff; border-radius: 4px; }
   .exportando [data-k], .exportando [data-k]:hover, .exportando [data-k]:focus { box-shadow: none !important; }
 
-  .cuenta {
-    position: absolute; top: 22px; right: 24px;
-    padding: 4px 15px 5px;
-    border-radius: 999px;
-    background: rgba(12, 8, 40, 0.62);
-    font: 800 26px 'Nunito', sans-serif; font-style: normal;
-    letter-spacing: .02em;
-    color: #fff;
+  /* Grind: condensada, mayúsculas, lleva las letras arriba del renglón */
+  .grind {
+    font-family: 'Grind', Impact, 'Arial Narrow', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: .9;
+    padding-top: .12em;
+    letter-spacing: .005em;
+  }
+  .etiqueta {
+    font: 700 26px/1 'Grift', sans-serif;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--verde);
   }
 
-  .logo {
+  .logo-colonia {
     position: absolute;
     display: flex; align-items: flex-start;
-    font: italic 900 58px/1 'Nunito', sans-serif;
-    letter-spacing: -0.035em;
+    font: italic 700 50px/1 'Grift', sans-serif;
+    letter-spacing: -0.03em;
     color: #fff;
     white-space: nowrap;
   }
-  .logo svg { width: .42em; height: .42em; margin: -.06em .02em 0 0; flex: none; }
+  .logo-colonia svg { width: .4em; height: .4em; margin: -.04em .04em 0 0; flex: none; }
 
-  .marcador { font-family: 'Sedgwick Ave Display', 'Kalam', cursive; font-weight: 400; line-height: .95; }
-  /* Títulos en minúscula (¡Ganate…, ¿Cómo participar?…): pincel con minúsculas de verdad */
-  .guion { font-family: 'Caveat Brush', 'Kalam', cursive; font-weight: 400; line-height: .95; }
-
-  .brocha {
+  /* Globo de diálogo verde (como el "50% OFF" del sponsor) */
+  .globo {
+    position: relative;
     display: inline-block;
-    padding: .06em .32em .14em;
-    background: var(--brocha-rosa) center / 100% 100% no-repeat;
+    background: var(--verde);
+    color: var(--azul);
+    border-radius: 34px;
+    padding: 18px 36px 14px;
   }
-  .brocha.verde { background-image: var(--brocha-verde); color: var(--tinta); }
+  .globo::after {
+    content: '';
+    position: absolute;
+    width: 64px; height: 50px;
+    background: var(--verde);
+    clip-path: polygon(0 0, 100% 0, 18% 100%);
+    bottom: -44px; left: 70px;
+  }
+  /* Grind lleva las tildes bien arriba: aire extra para que no se salgan del globo */
+  .globo.grind { padding: .3em .3em .08em; }
+  .globo.cola-der::after { left: auto; right: 80px; clip-path: polygon(0 0, 100% 0, 82% 100%); }
 
-  .garabato { position: absolute; pointer-events: none; overflow: visible; }
+  /* Tarjeta blanca redondeada (como las del sponsor) */
+  .tarjeta-blanca {
+    background: #fff;
+    color: var(--azul-tinta);
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(10, 6, 70, .35);
+  }
 
-  .sombra { text-shadow: 0 3px 0 rgba(20, 8, 90, .35); }
+  /* Ticket de yipio.com.uy: talón + muescas */
+  .ticket {
+    --talon: 230px;
+    --muesca: 26px;
+    display: flex;
+    border-radius: 34px;
+    background: #fff;
+    color: var(--azul-tinta);
+    -webkit-mask:
+      radial-gradient(circle var(--muesca) at var(--talon) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+      radial-gradient(circle var(--muesca) at var(--talon) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+    mask:
+      radial-gradient(circle var(--muesca) at var(--talon) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+      radial-gradient(circle var(--muesca) at var(--talon) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  }
+  .ticket .talon {
+    flex: 0 0 var(--talon);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--verde);
+    color: var(--azul);
+    border-right: 5px dashed rgba(27, 22, 128, .35);
+  }
+  .ticket .cuerpo { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
-  /* 1/6 */
-  .p1 .foto { left: 0; top: 0; width: 720px; height: 782px; }
-  .p1 .columna {
-    left: 470px; top: 92px; width: 600px;
-    display: flex; flex-direction: column; align-items: center;
-    transform: rotate(-6deg);
-    text-transform: uppercase;
+  /* Cinta cruzada (las de la portada de yipio.com.uy) */
+  .cinta {
+    position: absolute; left: -60px; right: -60px;
+    height: 92px;
+    display: flex; align-items: center; justify-content: center; gap: 26px;
+    background: var(--verde);
+    color: var(--azul);
+    white-space: nowrap;
+    font-size: 54px;
+    box-shadow: 0 14px 30px rgba(10, 6, 70, .35);
   }
-  .p1 .sorteo { font-size: 150px; margin-bottom: 14px; }
-  .p1 .especial { font-size: 84px; }
-  .p1 .ciber { font-size: 98px; margin-top: 10px; }
-  .p1 .con { left: 690px; top: 588px; font-size: 56px; transform: rotate(-6deg); line-height: 1; }
-  .p1 .yipio { left: 672px; top: 646px; font-size: 76px; transform: rotate(-6deg); text-transform: none; }
+  .cinta.oscura { background: var(--azul-noche); color: #fff; }
+  .cinta i { font-style: normal; font-size: .62em; opacity: .9; }
 
-  /* 3/6 */
-  .p3 .foto { inset: 0; }
-  .p3 .velo {
-    position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(98deg, transparent 0%, transparent 34%, rgba(58,36,212,.75) 50%, var(--azul) 64%, var(--azul-osc) 100%);
-  }
-  .p3 .columna {
-    left: 520px; top: 150px; width: 540px;
-    display: flex; flex-direction: column; align-items: center;
-    transform: rotate(-8deg);
-    text-align: center;
-  }
-  .p3 .ganate { font-size: 104px; line-height: .98; }
-  .p3 .ganate .brocha { margin: -4px 0; }
-  .p3 .bajada { font-size: 40px; line-height: 1.15; margin-top: 12px; }
+  .resalte { color: var(--verde); }
+  .resalte-azul { color: var(--azul); }
 
-  /* 4/6 */
-  .p4 .foto { inset: 0; }
-  .p4 .velo {
-    position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(90deg, transparent 55%, rgba(39,22,166,.55) 100%);
+  /* ── 1/6 Portada ── */
+  /* Foto que se funde con el azul hacia la derecha */
+  .foto.funde-der {
+    -webkit-mask-image: linear-gradient(to right, #000 60%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 60%, transparent 100%);
   }
-  .p4 .titulo { left: 262px; top: 34px; font-size: 98px; transform: rotate(-5deg); z-index: 2; }
-  .p4 .tarjeta-blanca {
-    left: 356px; top: 196px; width: 692px; height: 548px;
-    background: #fff; border-radius: 64px;
-    transform: rotate(-1.5deg);
-    padding: 44px 40px 30px 44px;
-    color: var(--tinta);
+
+  /* ── 1/6 Portada ── */
+  /* Composición de la referencia: foto grande a la izquierda (de la cintura
+     para arriba), logo arriba a la derecha y el titular en bloque inclinado */
+  .p1 .luz {
+    position: absolute; left: -120px; top: -60px; width: 820px; height: 900px; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(110, 100, 255, .55), transparent);
   }
+  .p1 .foto { left: 0; top: 0; width: 600px; height: 782px; }
+  .p1 .logo-colonia { right: 66px; top: 44px; font-size: 52px; }
+  .p1 .titular {
+    left: 560px; width: 470px; top: 138px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    transform: rotate(-5deg);
+  }
+  .p1 .sorteo { font-size: 196px; line-height: .8; }
+  .p1 .especial { font-size: 80px; margin-top: 10px; }
+  .p1 .ciber {
+    font-size: 96px; margin-top: 14px;
+    background: var(--verde); color: var(--azul);
+    border-radius: 16px; padding: .14em .22em 0;
+  }
+  .p1 .con { display: flex; align-items: center; gap: 18px; margin-top: 34px; }
+  .p1 .palabra-con { font-size: 60px; color: #fff; }
+  .p1 .usuario { font-size: 78px; background: #fff; color: var(--azul); border-radius: 16px; padding: .14em .22em .08em; }
+
+  /* ── 3/6 Premio ── */
+  .p3 .foto { left: 0; top: 0; width: 640px; height: 782px; }
+  .p3 .logo-colonia { left: 44px; top: 40px; font-size: 44px; }
+  .p3 .ticket { --talon: 160px; --muesca: 20px; left: 440px; top: 120px; width: 600px; height: 300px; transform: rotate(-3deg); }
+  .p3 .ticket .x2 { font-size: 130px; line-height: .8; }
+  .p3 .ticket .talon .etiqueta { color: var(--azul); font-size: 17px; letter-spacing: .2em; margin-top: 4px; }
+  .p3 .ticket .cuerpo { padding: 0 30px 0 34px; }
+  .p3 .ticket .ganate { font-size: 52px; color: var(--azul); }
+  .p3 .ticket .pasajes { font-size: 104px; }
+  .p3 .ticket .ida { font-size: 50px; color: var(--azul); }
+  .p3 .bajada { left: 470px; right: 40px; top: 500px; text-align: center; font-size: 38px; line-height: 1.2; font-weight: 600; }
+
+  /* ── 4/6 Cómo participar ── */
+  .p4 .foto { left: 0; top: 0; width: 600px; height: 782px; }
+  .p4 .titulo { left: 300px; top: 34px; font-size: 92px; transform: rotate(-3deg); z-index: 2; }
+  .p4 .tarjeta-blanca { left: 340px; right: 40px; top: 186px; bottom: 40px; padding: 58px 36px 24px 40px; }
   .lista { list-style: none; display: flex; flex-direction: column; }
-  .p4 .lista { gap: 22px; font-size: 37px; line-height: 1.02; }
+  .p4 .lista { gap: 20px; font-size: 30px; line-height: 1.15; font-weight: 600; }
   .p4 .lista li { display: flex; align-items: center; gap: 22px; }
-  .p4 .lista svg { width: 64px; height: 64px; flex: none; }
-
-  /* 5/6 */
-  .p5 .foto { left: 0; top: 0; width: 580px; height: 782px; }
-  .p5 .columna {
-    left: 560px; top: 70px; width: 500px;
-    display: flex; flex-direction: column; align-items: center;
-    transform: rotate(-4deg); text-align: center;
+  .num {
+    flex: none;
+    width: 62px; height: 62px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--verde); color: var(--azul);
+    font-size: 48px;
   }
-  .p5 .anuncio { display: flex; align-items: center; gap: 18px; font-size: 38px; line-height: 1.08; }
-  .p5 .anuncio svg { width: 78px; height: 78px; flex: none; }
-  .p5 .fecha { font-size: 74px; white-space: nowrap; color: var(--rosa); text-transform: uppercase; margin-top: 18px; line-height: .98;
-    text-shadow: 0 4px 0 rgba(20, 8, 90, .45); }
-  .p5 .historias { font-size: 38px; line-height: 1.08; margin-top: 14px; }
-  .p5 .suerte { left: 610px; top: 512px; width: 420px; text-align: center; font-size: 108px; line-height: .98; transform: rotate(-8deg); }
-  .p5 .suerte .brocha { margin: -4px 0; }
+  .p4 .lista b { color: var(--azul); font-weight: 700; }
 
-  /* 6/6 */
-  .p6 .titulo { left: 150px; top: 36px; font-size: 82px; transform: rotate(-4deg); z-index: 2; }
-  .p6 .tarjeta-blanca {
-    left: 36px; top: 150px; width: 1018px; height: 464px;
-    background: #fff; border-radius: 56px;
-    padding: 50px 44px 30px 54px;
-    color: var(--tinta);
-  }
-  .p6 .lista { gap: 16px; font-size: 29px; line-height: 1.1; }
-  .p6 .lista li { display: flex; align-items: flex-start; gap: 26px; }
-  .p6 .lista svg { width: 38px; height: 38px; flex: none; margin-top: 2px; }
-  .p6 .logo { left: 0; right: 0; top: 664px; justify-content: center; font-size: 84px; }
+  /* ── 5/6 Ganador ── */
+  .p5 .foto { left: 0; top: 0; width: 600px; height: 782px; }
+  .p5 .anuncio { left: 500px; right: 40px; top: 60px; text-align: center; font-size: 36px; font-weight: 600; line-height: 1.15; }
+  .p5 .ticket { --talon: 150px; --muesca: 18px; left: 500px; top: 130px; width: 540px; height: 260px; }
+  .p5 .ticket .dia { font-size: 30px; letter-spacing: .14em; }
+  .p5 .ticket .numero { font-size: 130px; line-height: .78; }
+  .p5 .ticket .mes { font-size: 32px; letter-spacing: .14em; }
+  .p5 .ticket .cuerpo { padding: 0 26px 0 32px; }
+  .p5 .ticket .lunes { font-size: 62px; color: var(--azul); white-space: nowrap; }
+  .p5 .ticket .historias { font-size: 26px; font-weight: 600; line-height: 1.15; margin-top: 8px; }
+  .p5 .suerte { left: 500px; right: 40px; top: 486px; display: flex; justify-content: center; }
+  .p5 .suerte .globo { font-size: 78px; white-space: nowrap; transform: rotate(-3deg); }
+  .p5 .suerte .globo::after { top: -44px; bottom: auto; clip-path: polygon(18% 0, 100% 100%, 0 100%); }
+
+  /* ── 6/6 Términos ── */
+  .p6 .titulo { left: 0; right: 0; top: 40px; text-align: center; }
+  .p6 .titulo .grind { font-size: 96px; }
+  .p6 .titulo .etiqueta { margin-bottom: 10px; font-size: 22px; }
+  .p6 .tarjeta-blanca { left: 40px; right: 40px; top: 196px; height: 466px; padding: 40px 44px 24px 42px; }
+  .p6 .lista { gap: 20px; font-size: 29px; line-height: 1.18; font-weight: 600; }
+  .p6 .lista li { display: flex; align-items: flex-start; gap: 20px; }
+  .p6 .lista .tilde { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--verde); display: grid; place-items: center; margin-top: -3px; }
+  .p6 .lista .tilde svg { width: 22px; height: 22px; }
+  .p6 .pie { left: 0; right: 0; top: 690px; display: flex; justify-content: center; align-items: center; gap: 26px; }
+  .p6 .pie .logo-colonia { position: static; font-size: 48px; }
+  .p6 .pie .x { font-size: 40px; color: var(--verde); padding-top: .1em; }
+  .p6 .pie .yipio { font-size: 62px; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Carrete · Sorteo Ciberlunes</h1>
-  <p>Fotos: “Cambiar foto” o soltá el archivo arriba de la placa. Arrastrá para mover, rueda para zoom. Los textos se editan haciendo clic.</p>
+  <h1>Carrete <span>✦</span> Sorteo Ciberlunes</h1>
+  <p>Fotos: “Cambiar foto” o soltá el archivo arriba de la placa. Arrastrá para mover, rueda para zoom, doble clic para centrar. Los textos se editan haciendo clic.</p>
   <button id="restaurar">Restaurar textos</button>
   <button class="principal" id="todas">Descargar todas</button>
 </header>
+
+<!-- Destello de 4 puntas de yipio.com.uy (se reutiliza con <use>) -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="d" viewBox="0 0 40 40"><path d="M20 0 C21.5 13 27 18.5 40 20 C27 21.5 21.5 27 20 40 C18.5 27 13 21.5 0 20 C13 18.5 18.5 13 20 0 Z"/></symbol>
+  <symbol id="ast" viewBox="0 0 20 20"><path d="M10 1v18M1 10h18M3.6 3.6l12.8 12.8M16.4 3.6L3.6 16.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="tic" viewBox="0 0 40 40"><path d="M7 21 L16 30 L33 11" fill="none" stroke="#3a32ee" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
 
 <main class="grilla" id="grilla">
 
   <!-- ───── 1/6 ───── -->
   <section class="tarjeta" data-n="1">
     <div class="marco"><div class="placa p1">
-      <div class="foto" data-foto="img/1.png"></div>
+      <div class="cielo"></div>
+      <div class="luz"></div>
+      <div class="foto" data-foto="img/1.png" data-pos='{"x":0,"y":150,"z":1.35}'></div>
 
-      <svg class="garabato" style="left:34px;top:66px;width:110px;height:90px" viewBox="0 0 110 90" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round">
-        <path d="M14 70 C24 66 34 62 44 60"/><path d="M22 34 C32 40 42 46 52 52"/><path d="M62 8 C64 20 66 32 68 44"/>
-      </svg>
+      <svg class="destello" style="left:40px;top:70px;width:50px;height:50px;color:var(--verde)"><use href="#d"/></svg>
+      <svg class="destello" style="left:110px;top:40px;width:24px;height:24px;color:#fff"><use href="#d"/></svg>
+      <svg class="destello" style="left:996px;top:560px;width:40px;height:40px;color:var(--verde)"><use href="#d"/></svg>
 
-      <div class="logo" style="right:118px;top:34px"><svg viewBox="0 0 20 20" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M10 1v18M1 10h18M3.6 3.6l12.8 12.8M16.4 3.6L3.6 16.4"/></svg>coloniaexpress</div>
+      <div class="logo-colonia"><svg><use href="#ast"/></svg>coloniaexpress</div>
 
-      <div class="capa columna">
-        <div class="marcador sorteo sombra"><span class="brocha" data-k="1a">¡Sorteo</span></div>
-        <div class="marcador especial sombra" data-k="1b">especial de</div>
-        <div class="marcador ciber"><span class="brocha verde" data-k="1c">Ciberlunes!</span></div>
+      <!-- Todo el bloque inclinado junto, como en la referencia -->
+      <div class="capa titular">
+        <div class="grind sorteo" data-k="1a">Sorteo</div>
+        <div class="grind especial" data-k="1b">especial de</div>
+        <div class="grind ciber" data-k="1c">Ciberlunes</div>
+        <div class="con">
+          <span class="grind palabra-con" data-k="1d">con</span>
+          <span class="grind usuario" data-k="1e">@yipio</span>
+        </div>
       </div>
-
-      <svg class="garabato" style="left:846px;top:524px;width:170px;height:74px" viewBox="0 0 170 74" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 44 L24 66 C70 70 120 68 150 62 L164 40 Z"/>
-        <path d="M34 44 L42 26 L128 22 L146 40"/><path d="M58 26 L64 10 L112 8 L120 22"/>
-        <path d="M52 34 h6 M70 33 h6 M88 32 h6 M106 31 h6"/><path d="M78 8 L80 1"/>
-      </svg>
-
-      <div class="capa guion con" data-k="1d">con</div>
-      <div class="capa guion yipio"><span class="brocha" data-k="1e">@yipio</span></div>
-
-      <svg class="garabato" style="left:948px;top:668px;width:80px;height:74px" viewBox="0 0 80 74" fill="none" stroke="var(--rosa)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10 18 C14 52 40 64 54 50 C66 38 50 24 40 36 C30 48 46 64 70 58"/><path d="M58 46 L70 58 L56 66"/>
-      </svg>
-
-      <div class="cuenta">1/6</div>
     </div></div>
     <div class="acciones">
       <span class="nombre">1/6 · Portada</span>
@@ -284,27 +380,27 @@
   <!-- ───── 3/6 ───── -->
   <section class="tarjeta" data-n="3">
     <div class="marco"><div class="placa p3">
-      <div class="foto" data-foto="img/3.webp"></div>
-      <div class="velo"></div>
+      <div class="cielo"></div>
+      <div class="foto funde-der" data-foto="img/3.webp"></div>
 
-      <div class="logo" style="left:44px;top:32px"><svg viewBox="0 0 20 20" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M10 1v18M1 10h18M3.6 3.6l12.8 12.8M16.4 3.6L3.6 16.4"/></svg>coloniaexpress</div>
+      <div class="logo-colonia"><svg><use href="#ast"/></svg>coloniaexpress</div>
 
-      <svg class="garabato" style="left:384px;top:300px;width:116px;height:110px" viewBox="0 0 116 110" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M58 100 C34 80 8 60 10 34 C12 14 36 8 50 26 C54 32 56 36 58 40 C62 22 78 6 96 12 C114 20 108 48 88 68 C78 78 66 88 56 98"/>
-      </svg>
-
-      <div class="capa columna">
-        <div class="guion ganate sombra">
-          <span class="brocha" data-k="3a">¡Ganate</span><br>
-          <span class="brocha" data-k="3b">2 pasajes</span><br>
-          <span class="brocha" data-k="3c">ida y vuelta!</span>
+      <div class="capa ticket">
+        <div class="talon">
+          <span class="grind x2">×2</span>
+          <span class="etiqueta">pasajes</span>
         </div>
-        <svg width="270" height="22" viewBox="0 0 270 22" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" style="margin-top:22px"><path d="M6 16 C80 6 170 4 264 8"/></svg>
-        <div class="bajada" data-k="3d">Cruzá con esa persona<br>que hace de cada<br>escapada una aventura.</div>
-        <svg width="270" height="26" viewBox="0 0 270 26" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" style="margin-top:10px"><path d="M6 20 C70 8 160 6 230 10 C200 12 150 16 120 20"/></svg>
+        <div class="cuerpo">
+          <span class="grind ganate" data-k="3a">¡Ganate</span>
+          <span class="grind pasajes" data-k="3b">2 pasajes</span>
+          <span class="grind ida" data-k="3c">ida y vuelta!</span>
+        </div>
       </div>
 
-      <div class="cuenta">3/6</div>
+      <svg class="destello" style="left:990px;top:84px;width:56px;height:56px;color:var(--verde)"><use href="#d"/></svg>
+      <svg class="destello" style="left:470px;top:690px;width:34px;height:34px;color:#fff"><use href="#d"/></svg>
+
+      <div class="capa bajada" data-k="3d">Cruzá con <span class="resalte">esa persona</span><br>que hace de cada escapada<br>una aventura.</div>
     </div></div>
     <div class="acciones">
       <span class="nombre">3/6 · Premio</span>
@@ -316,26 +412,21 @@
   <!-- ───── 4/6 ───── -->
   <section class="tarjeta" data-n="4">
     <div class="marco"><div class="placa p4">
-      <div class="foto" data-foto="img/4.webp"></div>
-      <div class="velo"></div>
-
-      <div class="capa guion titulo sombra"><span class="brocha" data-k="4a">¿Cómo participar?</span></div>
-
-      <svg class="garabato" style="left:944px;top:106px;width:110px;height:96px" viewBox="0 0 110 96" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round">
-        <path d="M10 42 C12 30 14 20 16 8"/><path d="M40 60 C52 48 62 38 72 30"/><path d="M58 88 C72 84 86 80 100 78"/>
-      </svg>
+      <div class="cielo"></div>
+      <div class="foto funde-der" data-foto="img/4.webp"></div>
 
       <div class="capa tarjeta-blanca">
         <ul class="lista">
-          <li><svg viewBox="0 0 64 64" fill="var(--rosa)"><circle cx="26" cy="18" r="13"/><path d="M2 58 C2 40 12 32 26 32 C40 32 50 40 50 58 Z"/><path d="M48 10 h6 v-6 h5 v6 h6 v5 h-6 v6 h-5 v-6 h-6 Z" transform="translate(-4 4)"/></svg><span data-k="4b">Seguí a @coloniaexpress<br>y a @yipio.</span></li>
-          <li><svg viewBox="0 0 64 64" fill="none" stroke="var(--rosa)" stroke-width="8" stroke-linejoin="round"><path d="M32 56 C18 46 6 36 6 22 C6 12 14 6 22 6 C27 6 30 9 32 12 C34 9 37 6 42 6 C50 6 58 12 58 22 C58 36 46 46 32 56 Z"/></svg><span data-k="4c">Dale like a esta publicación.</span></li>
-          <li><svg viewBox="0 0 64 64" fill="none" stroke="var(--rosa)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M58 6 L4 28 L26 36 L34 58 Z"/><path d="M26 36 L58 6"/></svg><span data-k="4d">Compartí la segunda<br>imagen de este posteo.</span></li>
-          <li><svg viewBox="0 0 64 64" fill="none" stroke="var(--rosa)" stroke-width="8" stroke-linecap="round"><path d="M24 6 L18 58 M46 6 L40 58 M8 22 H58 M6 42 H56"/></svg><span data-k="4e">Comentá el hashtag<br>#Ciberlunes2026.</span></li>
-          <li><svg viewBox="0 0 64 64" fill="var(--rosa)"><circle cx="32" cy="16" r="10"/><circle cx="12" cy="22" r="7"/><circle cx="52" cy="22" r="7"/><path d="M14 56 C14 38 22 30 32 30 C42 30 50 38 50 56 Z"/><path d="M0 52 C0 40 5 33 12 33 C15 33 17 34 18 35 C13 41 11 46 11 52 Z"/><path d="M64 52 C64 40 59 33 52 33 C49 33 47 34 46 35 C51 41 53 46 53 52 Z"/></svg><span data-k="4f" style="font-size:31px">Etiquetá a la persona con la que<br>viajarías (¡también debe seguirnos!).</span></li>
+          <li><span class="num grind">1</span><span data-k="4b">Seguí a <b>@coloniaexpress</b><br>y a <b>@yipio</b>.</span></li>
+          <li><span class="num grind">2</span><span data-k="4c">Dale like a esta publicación.</span></li>
+          <li><span class="num grind">3</span><span data-k="4d">Compartí la segunda imagen<br>de este posteo.</span></li>
+          <li><span class="num grind">4</span><span data-k="4e">Comentá el hashtag<br><b>#Ciberlunes2026</b>.</span></li>
+          <li><span class="num grind">5</span><span data-k="4f">Etiquetá a la persona con la que viajarías <b>(¡también debe seguirnos!)</b>.</span></li>
         </ul>
       </div>
 
-      <div class="cuenta">4/6</div>
+      <div class="capa titulo"><div class="globo grind"><span data-k="4a">¿Cómo participar?</span></div></div>
+      <svg class="destello" style="left:996px;top:60px;width:50px;height:50px;color:#fff"><use href="#d"/></svg>
     </div></div>
     <div class="acciones">
       <span class="nombre">4/6 · Cómo participar</span>
@@ -347,31 +438,26 @@
   <!-- ───── 5/6 ───── -->
   <section class="tarjeta" data-n="5">
     <div class="marco"><div class="placa p5">
-      <div class="foto" data-foto="img/5.webp"></div>
+      <div class="cielo"></div>
+      <div class="foto funde-der" data-foto="img/5.webp"></div>
 
-      <svg class="garabato" style="left:84px;top:262px;width:150px;height:76px" viewBox="0 0 150 76" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round">
-        <path d="M30 12 C8 18 6 40 24 50"/><path d="M58 40 C58 46 60 52 62 58"/><path d="M84 40 C86 46 86 52 86 58"/><path d="M118 14 C138 22 140 46 120 56"/>
-      </svg>
+      <div class="capa anuncio" data-k="5a">El ganador será anunciado el</div>
 
-      <div class="capa columna">
-        <div class="anuncio">
-          <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="12" width="52" height="46" rx="8"/><path d="M6 26 H58 M20 6 V18 M44 6 V18"/><path d="M18 36 h4 M30 36 h4 M42 36 h4 M18 47 h4 M30 47 h4 M42 47 h4" stroke-width="6"/></svg>
-          <span data-k="5a">El ganador será<br>anunciado el</span>
+      <div class="capa ticket">
+        <div class="talon">
+          <span class="grind dia" data-k="5b">Lun</span>
+          <span class="grind numero" data-k="5c">9</span>
+          <span class="grind mes" data-k="5d">Nov</span>
         </div>
-        <div class="marcador fecha" data-k="5b">Lunes 9<br>de noviembre</div>
-        <div class="historias" data-k="5c">a través de<br>nuestras historias.</div>
+        <div class="cuerpo">
+          <span class="grind lunes" data-k="5e">Lunes 9<br>de noviembre</span>
+          <span class="historias" data-k="5f">a través de nuestras historias.</span>
+        </div>
       </div>
 
-      <svg class="garabato" style="left:956px;top:448px;width:100px;height:80px" viewBox="0 0 100 80" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round">
-        <path d="M14 36 C20 26 26 16 30 6"/><path d="M40 54 C52 46 64 40 76 34"/><path d="M48 74 C62 74 76 72 92 70"/>
-      </svg>
-
-      <div class="capa guion suerte sombra">
-        <span class="brocha" data-k="5d">¡Mucha</span><br>
-        <span class="brocha" data-k="5e">suerte!</span>
-      </div>
-
-      <div class="cuenta">5/6</div>
+      <div class="capa suerte"><div class="globo grind"><span data-k="5g">¡Mucha suerte!</span></div></div>
+      <svg class="destello" style="left:520px;top:440px;width:44px;height:44px;color:#fff"><use href="#d"/></svg>
+      <svg class="destello" style="left:990px;top:690px;width:36px;height:36px;color:var(--verde)"><use href="#d"/></svg>
     </div></div>
     <div class="acciones">
       <span class="nombre">5/6 · Ganador</span>
@@ -383,28 +469,30 @@
   <!-- ───── 6/6 ───── -->
   <section class="tarjeta" data-n="6">
     <div class="marco"><div class="placa p6">
-      <div class="capa guion titulo sombra"><span class="brocha" data-k="6a">Términos y condiciones:</span></div>
-
-      <svg class="garabato" style="left:880px;top:84px;width:170px;height:84px;z-index:3" viewBox="0 0 170 84" fill="#fff" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 50 L24 76 C70 80 120 78 150 72 L164 46 Z" fill="#fff"/>
-        <path d="M34 50 L42 30 L128 26 L146 46 Z" fill="#fff"/><path d="M58 30 L64 12 L112 10 L120 26 Z" fill="#fff"/>
-        <path d="M52 40 h6 M70 39 h6 M88 38 h6 M106 37 h6 M40 62 h8 M62 62 h8 M84 61 h8 M106 60 h8" stroke="var(--azul)" stroke-width="5"/>
-      </svg>
+      <div class="cielo"></div>
+      <div class="capa titulo">
+        <div class="etiqueta" data-k="6z">Sorteo Ciberlunes</div>
+        <div class="grind" data-k="6a">Términos y condiciones</div>
+      </div>
+      <svg class="destello" style="left:70px;top:60px;width:40px;height:40px;color:var(--verde)"><use href="#d"/></svg>
+      <svg class="destello" style="left:980px;top:120px;width:32px;height:32px;color:#fff"><use href="#d"/></svg>
 
       <div class="capa tarjeta-blanca">
         <ul class="lista">
-          <li><svg viewBox="0 0 40 40" fill="none" stroke="var(--tinta)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 L16 32 L36 8"/></svg><span data-k="6b">Pueden participar mayores de 18 años residentes en Uruguay.</span></li>
-          <li><svg viewBox="0 0 40 40" fill="none" stroke="var(--tinta)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 L16 32 L36 8"/></svg><span data-k="6c">Premio válido para una persona y un acompañante.</span></li>
-          <li><svg viewBox="0 0 40 40" fill="none" stroke="var(--tinta)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 L16 32 L36 8"/></svg><span data-k="6d">Válido para viajar hasta el 31/05/2027.</span></li>
-          <li><svg viewBox="0 0 40 40" fill="none" stroke="var(--tinta)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 L16 32 L36 8"/></svg><span data-k="6e">No es válido para viajar del 20/12/2026 al 18/01/2027,<br>del 06/02/2027 al 09/02/2027 ni del 24/03/2027 al 28/03/2027.</span></li>
-          <li><svg viewBox="0 0 40 40" fill="none" stroke="var(--tinta)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 L16 32 L36 8"/></svg><span data-k="6f">El premio no es válido en feriados, fines de semana largos<br>ni períodos vacacionales.</span></li>
-          <li><svg viewBox="0 0 40 40" fill="none" stroke="var(--tinta)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 L16 32 L36 8"/></svg><span data-k="6g">El premio es intransferible y no canjeable por dinero.</span></li>
+          <li><span class="tilde"><svg><use href="#tic"/></svg></span><span data-k="6b">Pueden participar mayores de 18 años residentes en Uruguay.</span></li>
+          <li><span class="tilde"><svg><use href="#tic"/></svg></span><span data-k="6c">Premio válido para una persona y un acompañante.</span></li>
+          <li><span class="tilde"><svg><use href="#tic"/></svg></span><span data-k="6d">Válido para viajar hasta el 31/05/2027.</span></li>
+          <li><span class="tilde"><svg><use href="#tic"/></svg></span><span data-k="6e">No es válido para viajar del 20/12/2026 al 18/01/2027, del 06/02/2027 al 09/02/2027 ni del 24/03/2027 al 28/03/2027.</span></li>
+          <li><span class="tilde"><svg><use href="#tic"/></svg></span><span data-k="6f">El premio no es válido en feriados, fines de semana largos ni períodos vacacionales.</span></li>
+          <li><span class="tilde"><svg><use href="#tic"/></svg></span><span data-k="6g">El premio es intransferible y no canjeable por dinero.</span></li>
         </ul>
       </div>
 
-      <div class="logo"><svg viewBox="0 0 20 20" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M10 1v18M1 10h18M3.6 3.6l12.8 12.8M16.4 3.6L3.6 16.4"/></svg>coloniaexpress</div>
-
-      <div class="cuenta">6/6</div>
+      <div class="capa pie">
+        <div class="logo-colonia"><svg><use href="#ast"/></svg>coloniaexpress</div>
+        <span class="grind x">×</span>
+        <span class="grind yipio">Yipio</span>
+      </div>
     </div></div>
     <div class="acciones">
       <span class="nombre">6/6 · Términos</span>
@@ -414,9 +502,18 @@
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
 <script>
-const CLAVE = 'carrete-colonia-v1';
+const CLAVE = 'carrete-colonia-v3';
 const W = 1080, H = 782;
+
+/* html-to-image no resuelve <use href="#…">: copio el dibujo adentro de cada svg */
+document.querySelectorAll('.placa svg use').forEach(u => {
+  const s = document.querySelector(u.getAttribute('href'));
+  const svg = u.closest('svg');
+  svg.setAttribute('viewBox', s.getAttribute('viewBox'));
+  svg.innerHTML = s.innerHTML;
+});
 
 function leer() { try { return JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { return {}; } }
 function guardar(d) { try { localStorage.setItem(CLAVE, JSON.stringify(d)); } catch (e) {} }
@@ -438,7 +535,7 @@ const originales = {};
 document.querySelectorAll('[data-k]').forEach(el => {
   const k = el.dataset.k;
   originales[k] = el.innerHTML;
-  el.contentEditable = 'plaintext-only';
+  el.contentEditable = 'true';
   el.spellcheck = false;
   if (estado.textos[k] != null) el.innerHTML = estado.textos[k];
   el.addEventListener('input', () => { estado.textos[k] = el.innerHTML; guardar(estado); });
@@ -455,11 +552,12 @@ document.querySelectorAll('.tarjeta').forEach(tarjeta => {
   const n = tarjeta.dataset.n;
   const caja = tarjeta.querySelector('.foto');
   if (!caja) return;
-  const placa = tarjeta.querySelector('.placa');
   const marco = tarjeta.querySelector('.marco');
   const img = new Image();
   caja.appendChild(img);
-  const pos = Object.assign({ x: 0, y: 0, z: 1 }, estado.fotos[n]);
+  // Encuadre inicial: data-pos de la foto (si tiene) o centrado
+  const inicial = Object.assign({ x: 0, y: 0, z: 1 }, caja.dataset.pos ? JSON.parse(caja.dataset.pos) : {});
+  const pos = Object.assign({}, inicial, estado.fotos[n]);
   let origen = null;       // la imagen tal cual se cargó
   const chk = tarjeta.querySelector('[data-sinfondo]');
   let sinFondo = !!(chk && chk.checked);
@@ -505,7 +603,7 @@ document.querySelectorAll('.tarjeta').forEach(tarjeta => {
     pos.z = Math.min(5, Math.max(0.3, pos.z * (e.deltaY < 0 ? 1.06 : 1 / 1.06)));
     ubicar(); recordar();
   }, { passive: false });
-  caja.addEventListener('dblclick', () => { pos.x = 0; pos.y = 0; pos.z = 1; ubicar(); recordar(); });
+  caja.addEventListener('dblclick', () => { Object.assign(pos, inicial); ubicar(); recordar(); });
 
   function archivo(f) {
     if (!f || !f.type.startsWith('image/')) return;
@@ -541,12 +639,18 @@ function quitarBlanco(o) {
     if (x > 0) pila.push(k - 1); if (x < w - 1) pila.push(k + 1);
     if (y > 0) pila.push(k - w); if (y < h - 1) pila.push(k + w);
   }
-  for (let k = 0; k < w * h; k++) {
-    if (visto[k]) { p[k * 4 + 3] = 0; continue; }
-    // borde suave: píxel pegado al fondo queda semitransparente
-    const x = k % w;
-    if ((x > 0 && visto[k - 1]) || (x < w - 1 && visto[k + 1]) || visto[k - w] || visto[k + w]) p[k * 4 + 3] = 140;
+  // Borde: se comen 2 píxeles (el halo claro del recorte) y el 3º queda semitransparente
+  const pegado = (m, k) => { const x = k % w; return (x > 0 && m[k - 1]) || (x < w - 1 && m[k + 1]) || m[k - w] || m[k + w]; };
+  let fondo = visto;
+  for (let paso = 0; paso < 3; paso++) {
+    const nuevo = fondo.slice();
+    for (let k = 0; k < w * h; k++) {
+      if (fondo[k] || !pegado(fondo, k)) continue;
+      if (paso < 2) nuevo[k] = 1; else p[k * 4 + 3] = 150;
+    }
+    fondo = nuevo;
   }
+  for (let k = 0; k < w * h; k++) if (fondo[k]) p[k * 4 + 3] = 0;
   g.putImageData(d, 0, 0);
   return c.toDataURL('image/png');
 }
