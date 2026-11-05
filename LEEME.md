@@ -30,6 +30,17 @@ Cada momento lleva `etiqueta`, `titulo`, `texto` y una de estas cabeceras:
 `video` + `poster`, `imagen`, `versus` (`{ "rival": "Cinzia", "resultadoRival": "Eliminada" }`)
 o `placa` (texto grande). Opcionales: `frase`, `votos` (barra), `destacado`.
 
+### Reels de Instagram
+
+`python herramientas/actualizar_reels.py` pone los últimos 6 reels de @yipio en `data/instagram.json`
+e `img/instagram/` (necesita `pip install playwright pillow` una vez; usa el Edge de Windows).
+A los reels nuevos les pone de texto la primera línea del reel: revisarlo antes de commitear.
+
+### Carrete de sorteo (Colonia Express)
+
+`carrete/` (http://localhost:4600/carrete/) arma las placas 1, 3, 4, 5 y 6 del carrete del sorteo Ciberlunes
+(la 2/6 la pone Colonia). Fotos por defecto en `carrete/img/`; se cambian desde la página y se descargan en PNG 1080 × 782.
+
 ## Archivos que se detectan solos (sin tocar JSON)
 
 - `img/banner/1A.png` (PC) / `1B.png` (celular), `2A`, `2B`... → slider de portada.
