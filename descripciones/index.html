@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Yipio - Descripciones de videos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232a0d4d'/%3E%3Ctext x='50' y='76' font-size='74' font-weight='900' font-family='Arial Narrow,Arial' text-anchor='middle' fill='%23e4c06a'%3EY%3C/text%3E%3C/svg%3E">
+<!-- Descripción para videos (reels, TikTok, YouTube) armada sola con las
+     próximas fechas de yipio.com.uy (data/fechas.json). Primero intenta leer
+     la web publicada; si no puede, usa la copia local del repo.
+     Solo entran fechas visibles, que no pasaron y no están agotadas
+     (las agotadas se pueden sumar con el tilde). El cierre es siempre el mismo. -->
+<style>
+  @font-face { font-family: 'Grind'; src: url('../fonts/GCGrind.woff2') format('woff2'); font-weight: 400 900; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Medium.woff2') format('woff2'); font-weight: 500; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Bold.woff2') format('woff2'); font-weight: 700; }
+
+  :root {
+    --negro: #07040c;
+    --fondo: #0c0614;
+    --fondo-2: #140a22;
+    --purpura: #6a1fb5;
+    --purpura-vivo: #8f3fe0;
+    --oro: #e4c06a;
+    --texto: #f3edf9;
+    --texto-suave: #b9aad0;
+    --linea: rgba(228, 192, 106, 0.26);
+    --grad-oro: linear-gradient(100deg, #b8862b 0%, #f3d98f 18%, #fff5d6 28%, #d9ad4a 42%, #f6dc93 58%, #b8862b 76%, #f0cf7c 90%, #b8862b 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--negro);
+    font-family: 'Grift', system-ui, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    color: var(--texto);
+    padding: 32px 16px 48px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  .titulo small {
+    display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--texto-suave);
+  }
+  .titulo h1 {
+    font-family: 'Grind', Impact, sans-serif; font-weight: 400; font-size: 34px;
+    line-height: 1.1; padding-top: 0.12em; text-transform: uppercase;
+    background: var(--grad-oro); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .caja {
+    background: var(--fondo); border: 1px solid var(--linea); border-radius: 14px; padding: 18px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .caja h2 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--oro);
+  }
+  .fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  label.fecha {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    background: var(--fondo-2); cursor: pointer; line-height: 1.3;
+  }
+  label.fecha.apagada { opacity: 0.5; }
+  label.fecha small { color: var(--texto-suave); font-size: 12px; margin-left: auto; white-space: nowrap; }
+  input[type=checkbox] { accent-color: var(--purpura-vivo); width: 18px; height: 18px; flex: none; }
+  .opcion { font-size: 14px; color: var(--texto-suave); display: flex; gap: 8px; align-items: center; cursor: pointer; }
+  textarea {
+    width: 100%; min-height: 200px; resize: vertical; padding: 14px; border-radius: 10px;
+    background: var(--negro); color: var(--texto); border: 1px solid var(--linea);
+    font: 500 16px/1.5 'Grift', system-ui, sans-serif;
+  }
+  button {
+    font: 700 15px 'Grift', system-ui, sans-serif; letter-spacing: 0.04em; cursor: pointer;
+    border: 0; border-radius: 999px; padding: 12px 22px; color: #fff;
+    background: linear-gradient(135deg, var(--purpura), var(--purpura-vivo));
+  }
+  button.sec { background: transparent; border: 1px solid var(--linea); color: var(--texto-suave); }
+  .estado { font-size: 13px; color: var(--texto-suave); }
+  .estado.error { color: #ff8a8a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="titulo">
+    <small>Yipio · herramientas</small>
+    <h1>Descripción de videos</h1>
+  </div>
+
+  <div class="caja">
+    <h2>Fechas</h2>
+    <div id="lista"><p class="estado">Cargando fechas de yipio.com.uy…</p></div>
+    <label class="opcion"><input type="checkbox" id="verAgotadas"> Mostrar fechas agotadas</label>
+    <p class="estado" id="fuente"></p>
+  </div>
+
+  <div class="caja">
+    <h2>Descripción</h2>
+    <textarea id="salida" spellcheck="false"></textarea>
+    <div class="fila">
+      <button id="copiar">Copiar</button>
+      <button class="sec" id="regenerar">Regenerar</button>
+      <span class="estado" id="aviso"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const CIERRE = '🟣Entradas en yipio.com.uy \n\n#standup #yipio #uruguay #argentina';
+  const FUENTES = [
+    ['yipio.com.uy', 'https://yipio.com.uy/data/fechas.json'],
+    ['copia local', '../data/fechas.json'],
+  ];
+  const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+    'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const BANDERAS = { UY: '🇺🇾', AR: '🇦🇷', CL: '🇨🇱', PY: '🇵🇾', BR: '🇧🇷', ES: '🇪🇸', MX: '🇲🇽', US: '🇺🇸' };
+
+  const $ = (id) => document.getElementById(id);
+  let fechas = [];
+  const desmarcadas = new Set();
+
+  function hoyISO() {
+    const d = new Date();
+    return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+  }
+
+  // "🇦🇷 7 de Noviembre - CABA, Paseo La Plaza"; en Montevideo va solo el lugar.
+  function linea(f) {
+    const [, m, d] = f.fecha.split('-').map(Number);
+    const ciudad = (f.ciudad || '').trim();
+    const lugar = (f.lugar || '').trim();
+    const donde = ciudad && ciudad !== 'Montevideo' && lugar ? `${ciudad}, ${lugar}` : (lugar || ciudad);
+    const bandera = BANDERAS[(f.pais || '').toUpperCase()] || '';
+    return `${bandera ? bandera + ' ' : ''}${d} de ${MESES[m - 1]} - ${donde}`;
+  }
+
+  function proximas() {
+    const hoy = hoyISO();
+    return fechas
+      .filter((f) => f.visible !== false && f.fecha >= hoy && ($('verAgotadas').checked || !f.agotado))
+      .sort((a, b) => `${a.fecha} ${a.hora || ''}`.localeCompare(`${b.fecha} ${b.hora || ''}`));
+  }
+
+  function generar() {
+    const lineas = proximas().filter((f) => !desmarcadas.has(f.id)).map(linea);
+    $('salida').value = (lineas.length ? lineas.join('\n') + '\n\n' : '') + CIERRE;
+  }
+
+  function pintarLista() {
+    const lista = proximas();
+    if (!lista.length) {
+      $('lista').innerHTML = '<p class="estado">No hay fechas próximas.</p>';
+      generar();
+      return;
+    }
+    $('lista').innerHTML = '';
+    const cont = document.createElement('div');
+    cont.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+    lista.forEach((f) => {
+      const lab = document.createElement('label');
+      lab.className = 'fecha' + (desmarcadas.has(f.id) ? ' apagada' : '');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !desmarcadas.has(f.id);
+      cb.addEventListener('change', () => {
+        cb.checked ? desmarcadas.delete(f.id) : desmarcadas.add(f.id);
+        lab.classList.toggle('apagada', !cb.checked);
+        generar();
+      });
+      const txt = document.createElement('span');
+      txt.textContent = linea(f);
+      lab.append(cb, txt);
+      if (f.agotado) {
+        const s = document.createElement('small');
+        s.textContent = 'Agotado';
+        lab.append(s);
+      }
+      cont.append(lab);
+    });
+    $('lista').append(cont);
+    generar();
+  }
+
+  async function cargar() {
+    for (const [nombre, url] of FUENTES) {
+      try {
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok) throw new Error(r.status);
+        fechas = await r.json();
+        $('fuente').textContent = `Fechas leídas de ${nombre} · ${new Date().toLocaleString('es-UY')}`;
+        pintarLista();
+        return;
+      } catch (e) { /* probar la siguiente fuente */ }
+    }
+    $('lista').innerHTML = '<p class="estado error">No se pudieron cargar las fechas.</p>';
+    generar();
+  }
+
+  $('verAgotadas').addEventListener('change', pintarLista);
+  $('regenerar').addEventListener('click', generar);
+  $('copiar').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText($('salida').value);
+    } catch (e) {
+      $('salida').select();
+      document.execCommand('copy');
+    }
+    $('aviso').textContent = '¡Copiado!';
+    setTimeout(() => { $('aviso').textContent = ''; }, 1800);
+  });
+
+  cargar();
+})();
+</script>
+</body>
+</html>
