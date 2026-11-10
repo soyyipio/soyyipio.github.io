@@ -9,4 +9,5 @@
   { "id": "cordoba-2027-01-18", "fecha": "2027-01-18", "hora": "", "ciudad": "Córdoba", "pais": "AR", "lugar": "Candilejas 2", "direccion2": "Pasaje Niní Marshall 75", "titulo": "PATOTERA", "portada": "", "show": "PATOTERA", "link": "", "ultimas": false, "visible": false },
   { "id": "cordoba-2027-02-08", "fecha": "2027-02-08", "hora": "", "ciudad": "Córdoba", "pais": "AR", "lugar": "Candilejas 2", "direccion2": "Pasaje Niní Marshall 75", "titulo": "PATOTERA", "portada": "", "show": "PATOTERA", "link": "", "ultimas": false, "visible": false },
   { "id": "cordoba-2027-02-15", "fecha": "2027-02-15", "hora": "", "ciudad": "Córdoba", "pais": "AR", "lugar": "Candilejas 2", "direccion2": "Pasaje Niní Marshall 75", "titulo": "PATOTERA", "portada": "", "show": "PATOTERA", "link": "", "ultimas": false, "visible": false }
+  { "id": "caba-2026-12-12", "fecha": "2026-12-12", "hora": "", "ciudad": "CABA", "pais": "AR", "lugar": "Chacarerean", "direccion2": "Nicaragua 5565", "titulo": "PATOTERA", "portada": "", "show": "PATOTERA", "link": "", "ultimas": false, "visible": false }
 ]
