@@ -13,6 +13,7 @@
      si no, el texto YIPIO. -->
 <style>
   @font-face { font-family: 'Grind'; src: url('../fonts/GCGrind.woff2') format('woff2'); font-weight: 400 900; }
+  @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Regular.woff2') format('woff2'); font-weight: 400; }
   @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Medium.woff2') format('woff2'); font-weight: 500; }
   @font-face { font-family: 'Grift'; src: url('../fonts/Grift-Bold.woff2') format('woff2'); font-weight: 700; }
 
@@ -33,46 +34,114 @@
 
   body {
     --alto-barra: 56px;
+    --ancho-panel: 340px;
     background: #000;
     display: flex;
     flex-direction: column;
-    align-items: center;
     overflow: hidden;
     font-family: 'Grift', system-ui, 'Segoe UI', sans-serif;
     color: var(--texto);
   }
 
   .barra {
-    align-self: stretch;
+    flex: none;
     height: var(--alto-barra);
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 0 16px;
+    padding: 0 20px;
     background: var(--fondo);
-    border-bottom: 1px solid rgba(228, 192, 106, 0.26);
+    border-bottom: 1px solid #2e1a45;
     font-size: 14px;
     color: var(--texto-suave);
   }
+  .barra h1 { margin: 0; font: 26px 'Grind', sans-serif; letter-spacing: 0.02em; color: var(--oro); }
+  .barra #estado { margin-left: auto; font-size: 12px; }
 
   .barra button {
-    padding: 8px 16px;
+    padding: 7px 14px;
     border: none;
-    border-radius: 999px;
-    background: var(--grad-oro);
-    color: var(--tinta);
+    border-radius: 6px;
+    background: #b36bff;
+    color: #12051f;
     font: inherit;
-    font-weight: 700;
+    font-weight: 500;
     cursor: pointer;
   }
   .barra button:disabled { opacity: 0.6; cursor: wait; }
+
+  .layout { flex: 1; min-height: 0; display: flex; }
+  .escenario {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    background: #000;
+    overflow: auto;
+  }
+
+  /* Panel de controles (mismo estilo que flyer-maker) */
+  .panel {
+    --linea: #2e1a45;
+    --suave: #a594b8;
+    --acento: #b36bff;
+    flex: none;
+    width: var(--ancho-panel);
+    padding: 8px 20px 24px;
+    overflow-y: auto;
+    background: #170b24;
+    border-right: 1px solid var(--linea);
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--texto);
+  }
+  .panel section { padding: 14px 0; border-bottom: 1px solid var(--linea); }
+  .panel section:last-child { border-bottom: 0; }
+  .panel h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--suave);
+  }
+  .panel .check { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; cursor: pointer; font-size: 13px; color: var(--texto); }
+  .panel input[type=checkbox] { accent-color: var(--acento); width: 16px; height: 16px; flex: none; }
+  .panel .hint { margin: 6px 0 0; font-size: 12px; color: var(--suave); }
+  .panel button.link { background: none; border: 0; padding: 0; color: var(--acento); text-decoration: underline; font: inherit; font-size: 13px; cursor: pointer; }
+  .web-acciones { display: flex; gap: 14px; margin: 0 0 6px; }
+
+  .pf {
+    display: block;
+    padding: 7px 0;
+    border-top: 1px solid var(--linea);
+    font-size: 13px;
+    color: var(--texto);
+  }
+  .pf-fila { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .pf-fila input { margin-top: 1px; }
+  .pf b { font-weight: 500; }
+  .pf.pasada .pf-fila { opacity: 0.55; }
+  .marca {
+    display: inline-block;
+    margin: 2px 4px 0 0;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--linea);
+    color: var(--suave);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  /* Opciones por fecha: solo aparecen en las tildadas */
+  .pf-extra { display: none; gap: 14px; margin: 5px 0 0 26px; }
+  .pf.on .pf-extra { display: flex; }
+  .pf-extra label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--suave); cursor: pointer; }
 
   /* Lienzo 9:16 en cqw/cqh. Zona segura: arriba 12%, abajo 20%, costados 13% */
   .placa {
     position: relative;
     flex: none;
     margin: auto;
-    width: min(100vw, (100vh - var(--alto-barra)) * 9 / 16);
+    width: min(100vw - var(--ancho-panel) - 32px, (100vh - var(--alto-barra) - 32px) * 9 / 16);
     aspect-ratio: 9 / 16;
     container-type: size;
     text-transform: uppercase;
@@ -310,30 +379,65 @@
     font-size: 6.4cqw;
     letter-spacing: 0.3cqw;
   }
+  /* Pie y fechas pasadas: se prenden desde el panel */
+  .placa:not(.con-pie) .pie { display: none; }
+  .placa.con-pie .zona-segura { bottom: 14cqh; }
+
+  @media (max-width: 800px) {
+    body { --ancho-panel: 0px; overflow: auto; height: auto; }
+    .layout { flex-direction: column; }
+    .panel { width: auto; border-right: 0; border-bottom: 1px solid #2e1a45; overflow: visible; }
+    .escenario { overflow: visible; padding: 16px 0; }
+    .placa { width: calc(100vw - 32px); }
+  }
 </style>
 <script src="../js/comun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
 </head>
 <body>
 
-<div class="barra">
-  <button type="button" id="descargar">Descargar PNG</button>
+<header class="barra">
+  <h1>Reel final</h1>
   <span id="estado">PNG de 1080 × 1920 px</span>
-</div>
+  <button type="button" id="descargar">Descargar PNG</button>
+</header>
 
-<main class="placa" id="placa">
-  <div class="zona-segura">
-    <div class="logo" id="logo"><span class="logo-texto oro">YIPIO<span class="estrella">✦</span></span></div>
+<div class="layout">
+  <aside class="panel">
+    <section>
+      <h2>Fechas</h2>
+      <div class="web-acciones">
+        <button type="button" class="link" id="selProximas">Próximas</button>
+        <button type="button" class="link" id="selTodas">Todas</button>
+        <button type="button" class="link" id="selNinguna">Ninguna</button>
+      </div>
+      <div id="lista"></div>
+      <p class="hint">Tildá las que salen en la placa. "Próximas" deja las que todavía no pasaron y están visibles en la web; las ocultas se pueden sumar a mano. En cada fecha tildada podés marcar últimas entradas o agotado.</p>
+    </section>
 
-    <section class="fechas" id="fechas"></section>
+    <section>
+      <h2>Opciones</h2>
+      <label class="check"><input type="checkbox" id="optPasadas" checked> Tachar fechas que ya pasaron</label>
+      <label class="check"><input type="checkbox" id="optPie"> Pie "Entradas en yipio.com.uy"</label>
+      <p class="hint"><button type="button" class="link" id="restablecer">Restablecer todo</button></p>
+    </section>
+  </aside>
 
-    <!-- Oculto temporalmente: borrar style="display: none" para que vuelva -->
-    <footer class="pie" style="display: none">
-      Entradas en
-      <span class="pie-web oro">yipio.com.uy</span>
-    </footer>
+  <div class="escenario">
+    <main class="placa" id="placa">
+      <div class="zona-segura">
+        <div class="logo" id="logo"><span class="logo-texto oro">YIPIO<span class="estrella">✦</span></span></div>
+
+        <section class="fechas" id="fechas"></section>
+
+        <footer class="pie">
+          Entradas en
+          <span class="pie-web oro">yipio.com.uy</span>
+        </footer>
+      </div>
+    </main>
   </div>
-</main>
+</div>
 
 <script>
 (function () {
@@ -425,85 +529,179 @@
       .finally(() => { boton.disabled = false; });
   }
 
-  function cartel(f, pasada) {
-    if (f.agotado) return '<img class="sello" src="../img/agotado-inclinado.svg" alt="Agotado">';
-    if (pasada) return '';
-    if (f.ultimas) return '<span class="cartel cartel--ultimas">Últimas entradas</span>';
-    return '';
+  // ---- Estado del panel (se guarda en el navegador) ----
+  const CLAVE = 'yipio-reels-final-v1';
+  const porDefecto = () => ({ sel: {}, ultimas: {}, agotado: {}, pasadas: true, pie: false });
+  let estadoUI = porDefecto();
+  try { estadoUI = Object.assign(porDefecto(), JSON.parse(localStorage.getItem(CLAVE)) || {}); } catch (e) {}
+  const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estadoUI)); } catch (e) {} };
+
+  const lista = document.getElementById('lista');
+  const optPasadas = document.getElementById('optPasadas');
+  const optPie = document.getElementById('optPie');
+  let datos = []; // todas las fechas de data/fechas.json, ordenadas
+
+  const claveOrden = (f) => f.fecha + (f.hora || '');
+  const estaSel = (f) => (f.id in estadoUI.sel ? estadoUI.sel[f.id] : f.visible !== false);
+  const esUltimas = (f) => (f.id in estadoUI.ultimas ? estadoUI.ultimas[f.id] : !!f.ultimas);
+  const esAgotado = (f) => (f.id in estadoUI.agotado ? estadoUI.agotado[f.id] : !!f.agotado);
+  const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function pintarLista() {
+    const hoy = hoyISO();
+    lista.innerHTML = datos.map((f) => {
+      const [y, m, d] = f.fecha.split('-').map(Number);
+      const marcas = [
+        f.fecha < hoy ? '<span class="marca">pasada</span>' : '',
+        f.visible === false ? '<span class="marca">oculta en la web</span>' : '',
+      ].join('');
+      const on = estaSel(f);
+      return `
+      <div class="pf${on ? ' on' : ''}${f.fecha < hoy ? ' pasada' : ''}" data-id="${esc(f.id)}">
+        <label class="pf-fila">
+          <input type="checkbox" class="c-sel"${on ? ' checked' : ''}>
+          <span><b>${d} ${MESES[m - 1]} ${y}</b> ${esc(f.lugar || '')}${f.lugar ? ', ' : ''}${esc(f.ciudad)} ${marcas}</span>
+        </label>
+        <div class="pf-extra">
+          <label><input type="checkbox" class="c-ult"${esUltimas(f) ? ' checked' : ''}> Últimas entradas</label>
+          <label><input type="checkbox" class="c-ago"${esAgotado(f) ? ' checked' : ''}> Agotado</label>
+        </div>
+      </div>`;
+    }).join('');
   }
+
+  function htmlMes(g, hoy) {
+    return `
+      <div class="mes">
+        <h2 class="mes-titulo oro">${MESES_LARGO[g.mes - 1]}</h2>
+        <div class="lista">
+          ${g.items.map((f) => {
+            const [, m, d] = f.fecha.split('-').map(Number);
+            const pasada = estadoUI.pasadas && f.fecha < hoy;
+            const agotado = esAgotado(f);
+            const ultimas = esUltimas(f);
+            const clases = ['fecha'];
+            if (pasada) clases.push('fecha--pasada');
+            else if (agotado) clases.push('fecha--agotado');
+            else if (ultimas) clases.push('fecha--ultimas');
+            let extra = '';
+            if (agotado) extra = '<img class="sello" src="../img/agotado-inclinado.svg" alt="Agotado">';
+            else if (!pasada && ultimas) extra = '<span class="cartel cartel--ultimas">Últimas entradas</span>';
+            return `
+            <div class="${clases.join(' ')}">
+              <div class="fecha-dia oro">${d} ${MESES[m - 1]}</div>
+              <div class="divisor"></div>
+              <div class="fecha-info">
+                <div class="fecha-ciudad">${window.YIPIO ? YIPIO.bandera(f.pais) : ''}<span>${esc(f.ciudad)}</span></div>
+                ${f.lugar ? `<div class="fecha-lugar">${esc(f.lugar)}</div>` : ''}
+              </div>
+              ${extra}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }
+
+  function pintarPlaca() {
+    const hoy = hoyISO();
+    placa.classList.toggle('con-pie', !!estadoUI.pie);
+    const todas = datos
+      .filter(estaSel)
+      // Dos funciones el mismo día se muestran como una sola fecha
+      .filter((f, i, arr) => i === 0 || f.fecha !== arr[i - 1].fecha);
+
+    if (!todas.length) {
+      wrap.classList.remove('fechas--dos');
+      wrap.innerHTML = '<p class="sin-fechas">Pronto nuevas fechas</p>';
+      return;
+    }
+
+    const grupos = [];
+    todas.forEach((f) => {
+      const clave = f.fecha.slice(0, 7);
+      let g = grupos[grupos.length - 1];
+      if (!g || g.clave !== clave) {
+        g = { clave, mes: Number(f.fecha.slice(5, 7)), items: [] };
+        grupos.push(g);
+      }
+      g.items.push(f);
+    });
+
+    // Hasta MAX_UNA_COLUMNA fechas va en una columna; con más, los meses se
+    // reparten en dos columnas lo más parejas posible (cada mes cuenta sus
+    // fechas más uno por el título)
+    const columnas = [grupos];
+    if (todas.length > MAX_UNA_COLUMNA && grupos.length > 1) {
+      const peso = (gs) => gs.reduce((s, g) => s + g.items.length + 1, 0);
+      let mejor = 1;
+      for (let i = 1; i < grupos.length; i++) {
+        const dif = Math.abs(peso(grupos.slice(0, i)) - peso(grupos.slice(i)));
+        if (dif < Math.abs(peso(grupos.slice(0, mejor)) - peso(grupos.slice(mejor)))) mejor = i;
+      }
+      columnas.splice(0, 1, grupos.slice(0, mejor), grupos.slice(mejor));
+    }
+    wrap.classList.toggle('fechas--dos', columnas.length > 1);
+
+    wrap.innerHTML = '<div class="fechas-in">' +
+      columnas.map((gs) => `<div class="columna">${gs.map((g) => htmlMes(g, hoy)).join('')}</div>`).join('') +
+      '</div>';
+
+    ajustar();
+    document.fonts && document.fonts.ready.then(ajustar);
+  }
+
+  function refrescar() {
+    guardar();
+    pintarPlaca();
+  }
+
+  // Tilda/destilda todas las fechas según fn(fecha) -> true/false
+  function marcarSegun(fn) {
+    datos.forEach((f) => { estadoUI.sel[f.id] = !!fn(f); });
+    pintarLista();
+    refrescar();
+  }
+
+  lista.addEventListener('change', (e) => {
+    const fila = e.target.closest('.pf');
+    if (!fila) return;
+    const f = datos.find((x) => x.id === fila.dataset.id);
+    if (!f) return;
+    if (e.target.classList.contains('c-sel')) {
+      estadoUI.sel[f.id] = e.target.checked;
+      fila.classList.toggle('on', e.target.checked);
+    } else if (e.target.classList.contains('c-ult')) {
+      estadoUI.ultimas[f.id] = e.target.checked;
+    } else if (e.target.classList.contains('c-ago')) {
+      estadoUI.agotado[f.id] = e.target.checked;
+    }
+    refrescar();
+  });
+
+  document.getElementById('selProximas').addEventListener('click', () => {
+    const hoy = hoyISO();
+    marcarSegun((f) => f.fecha >= hoy && f.visible !== false);
+  });
+  document.getElementById('selTodas').addEventListener('click', () => marcarSegun(() => true));
+  document.getElementById('selNinguna').addEventListener('click', () => marcarSegun(() => false));
+  document.getElementById('restablecer').addEventListener('click', () => {
+    estadoUI = porDefecto();
+    optPasadas.checked = estadoUI.pasadas;
+    optPie.checked = estadoUI.pie;
+    pintarLista();
+    refrescar();
+  });
+  optPasadas.addEventListener('change', () => { estadoUI.pasadas = optPasadas.checked; refrescar(); });
+  optPie.addEventListener('change', () => { estadoUI.pie = optPie.checked; refrescar(); });
+  optPasadas.checked = !!estadoUI.pasadas;
+  optPie.checked = !!estadoUI.pie;
 
   fetch('../data/fechas.json')
     .then((r) => r.json())
     .then((fechas) => {
-      const hoy = hoyISO();
-      const todas = fechas
-        .filter((f) => f.visible !== false)
-        .sort((a, b) => (a.fecha + (a.hora || '')).localeCompare(b.fecha + (b.hora || '')))
-        // Dos funciones el mismo día se muestran como una sola fecha
-        .filter((f, i, arr) => i === 0 || f.fecha !== arr[i - 1].fecha);
-
-      if (!todas.length) {
-        wrap.innerHTML = '<p class="sin-fechas">Pronto nuevas fechas</p>';
-        return;
-      }
-
-      const grupos = [];
-      todas.forEach((f) => {
-        const clave = f.fecha.slice(0, 7);
-        let g = grupos[grupos.length - 1];
-        if (!g || g.clave !== clave) {
-          g = { clave, mes: Number(f.fecha.slice(5, 7)), items: [] };
-          grupos.push(g);
-        }
-        g.items.push(f);
-      });
-
-      // Hasta MAX_UNA_COLUMNA fechas va en una columna; con más, los meses se
-      // reparten en dos columnas lo más parejas posible (cada mes cuenta sus
-      // fechas más uno por el título)
-      const columnas = [grupos];
-      if (todas.length > MAX_UNA_COLUMNA && grupos.length > 1) {
-        const peso = (gs) => gs.reduce((s, g) => s + g.items.length + 1, 0);
-        let mejor = 1;
-        for (let i = 1; i < grupos.length; i++) {
-          const dif = Math.abs(peso(grupos.slice(0, i)) - peso(grupos.slice(i)));
-          if (dif < Math.abs(peso(grupos.slice(0, mejor)) - peso(grupos.slice(mejor)))) mejor = i;
-        }
-        columnas.splice(0, 1, grupos.slice(0, mejor), grupos.slice(mejor));
-      }
-      wrap.classList.toggle('fechas--dos', columnas.length > 1);
-
-      const htmlMes = (g) => `
-        <div class="mes">
-          <h2 class="mes-titulo oro">${MESES_LARGO[g.mes - 1]}</h2>
-          <div class="lista">
-            ${g.items.map((f) => {
-              const [, m, d] = f.fecha.split('-').map(Number);
-              const pasada = f.fecha < hoy;
-              const clases = ['fecha'];
-              if (pasada) clases.push('fecha--pasada');
-              else if (f.agotado) clases.push('fecha--agotado');
-              else if (f.ultimas && !f.agotado) clases.push('fecha--ultimas');
-              return `
-              <div class="${clases.join(' ')}">
-                <div class="fecha-dia oro">${d} ${MESES[m - 1]}</div>
-                <div class="divisor"></div>
-                <div class="fecha-info">
-                  <div class="fecha-ciudad">${window.YIPIO ? YIPIO.bandera(f.pais) : ''}<span>${f.ciudad}</span></div>
-                  ${f.lugar ? `<div class="fecha-lugar">${f.lugar}</div>` : ''}
-                </div>
-                ${cartel(f, pasada)}
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-
-      wrap.innerHTML = '<div class="fechas-in">' +
-        columnas.map((gs) => `<div class="columna">${gs.map(htmlMes).join('')}</div>`).join('') +
-        '</div>';
-
-      ajustar();
-      document.fonts && document.fonts.ready.then(ajustar);
+      datos = fechas.slice().sort((a, b) => claveOrden(a).localeCompare(claveOrden(b)));
+      pintarLista();
+      pintarPlaca();
     })
     .catch(() => {
       wrap.innerHTML = '<p class="sin-fechas">No se pudieron cargar las fechas.</p>';
