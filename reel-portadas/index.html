@@ -650,19 +650,20 @@
 
   function dibujar() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    // El fondo va siempre: si la foto tiene partes transparentes (PNG), sin
+    // esto quedan pegados los cuadros anteriores al hacer zoom o moverla
+    const g = ctx.createRadialGradient(W / 2, H * 0.42, 40, W / 2, H * 0.5, H * 0.75);
+    g.addColorStop(0, '#3a136c');
+    g.addColorStop(0.55, '#170a29');
+    g.addColorStop(1, '#07040c');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
     if (foto) {
       limitarPan();
       const s = escalaFoto();
       const dw = foto.naturalWidth * s;
       const dh = foto.naturalHeight * s;
       ctx.drawImage(foto, (W - dw) / 2 + panX, (H - dh) / 2 + panY, dw, dh);
-    } else {
-      const g = ctx.createRadialGradient(W / 2, H * 0.42, 40, W / 2, H * 0.5, H * 0.75);
-      g.addColorStop(0, '#3a136c');
-      g.addColorStop(0.55, '#170a29');
-      g.addColorStop(1, '#07040c');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
     }
     if (est.oscurecer > 0) {
       ctx.fillStyle = `rgba(7, 4, 12, ${est.oscurecer / 100})`;
